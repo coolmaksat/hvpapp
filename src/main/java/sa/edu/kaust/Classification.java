@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.nio.*;
 import java.nio.file.*;
 
@@ -10,6 +11,7 @@ import weka.core.Instance;
 
 public class Classification {
 
+    public static final String TEST_DATA_ROOT = "data/models/test/final/";
     RandomForest cls;
 
     public Classification(Properties props) throws Exception {
@@ -19,108 +21,147 @@ public class Classification {
 
     }
 
-    public boolean[] classify(String fileName) throws Exception {
-        FileReader fr = new FileReader(fileName);
+    public void classify(String fileName) throws Exception {
+        String dataRoot = TEST_DATA_ROOT;
+        FileReader fr = new FileReader(dataRoot + fileName);
         Instances is = new Instances(fr);
         is.setClassIndex(0);
-        Result[] results = new Result[is.numInstances()];
+        PrintWriter out = new PrintWriter(new BufferedWriter(
+            new FileWriter(dataRoot + fileName + ".res"), 104857600));
         for (int i = 0; i < is.numInstances(); i++) {
             Instance instance = is.instance(i);
-            // System.out.println(instance);
             double[] result = this.cls.distributionForInstance(instance);
-            results[i] = new Result(i, result[0]);
-            // System.out.print(instance.value(0) + " ");
-            // for(int j = 0; j < result.length; j++) {
-            //     System.out.print(result[j] + " ");
-            // }
-            // System.out.println();
+            out.println(result[0] + " " + result[1]);
         }
-
-        Arrays.sort(results, Collections.reverseOrder());
-        boolean[] ret = new boolean[2];
-        ret[0] = results[0].i == 0 && results[0].d > 0.5;
-        for (int i = 0; i < results.length; i++) {
-            if (results[i].i == 0 && results[i].d > 0.5) {
-                ret[1] = true;
-                break;
-            }
-        }
-        System.out.println(Arrays.toString(ret));
-        return ret;
+        out.close();
     }
 
     public void classifyAll() throws Exception {
-        String dataRoot = "data/models/set1/";
+        String dataRoot = TEST_DATA_ROOT;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
-        int n = 0, c = 0, j = 0;
+        List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
-            String fileName = filePath.toString();
-            boolean[] res = new boolean[2];
-            try {
-                res = this.classify(fileName);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(fileName);
+            String fileName = filePath.getFileName().toString();
+            if (!Files.exists(Paths.get(filePath.toString() + ".res"))) {
+                list.add(fileName);
             }
-            if (res[0]) c++;
-            if (res[1]) j++;
-            n++;
         }
+        String[] fileNames = list.toArray(new String[list.size()]);
+        Classification that = this;
+        IntFunction<String> clsfy = new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                String fileName = list.get(i);
+                try {
+                    System.out.println("Classifying file " + fileName);
+                    that.classify(fileName);
+                    System.out.println("Classifying file " + fileName + " finished");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return fileName;
+            }
+        };
 
-        System.out.println(n + " " + c + " " + j);
+        Arrays.parallelSetAll(fileNames, clsfy);
 
     }
 
     public void toArffAll() throws Exception {
-        String dataRoot = "data/models/set1/";
-        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.out");
+        String dataRoot = TEST_DATA_ROOT;
+        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
+        List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
             if (!Files.exists(Paths.get(filePath.toString() + ".arff"))) {
-                this.toArff(fileName);
+                list.add(fileName);
             }
         }
+        String[] fileNames = list.toArray(new String[list.size()]);
+        Classification that = this;
+        IntFunction<String> arff = new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                String fileName = list.get(i);
+                try {
+                    System.out.println("Processing file " + fileName);
+                    that.toArff(fileName);
+                    System.out.println("Processing file " + fileName + " finished");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return fileName;
+            }
+        };
+
+        Arrays.parallelSetAll(fileNames, arff);
 
     }
     public void toArff(String fileName) throws Exception {
-        String dataRoot = "data/models/set1/";
+        String dataRoot = TEST_DATA_ROOT;
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + fileName + ".arff"), 1073741824));
+            new FileWriter(dataRoot + fileName + ".arff"), 104857600));
         out.println("@relation " + fileName);
         out.println();
         out.println("@attribute TYPE {CASE,CTRL}");
-        out.println("@attribute SIFT_score numeric");
-        out.println("@attribute Polyphen2_HDIV_score numeric");
-        out.println("@attribute LRT_score numeric");
-        out.println("@attribute MutationTaster_score numeric");
-        out.println("@attribute MutationAssessor_score numeric");
-        out.println("@attribute FATHMM_score numeric");
-        out.println("@attribute PROVEAN_score numeric");
-        out.println("@attribute DANN_score numeric");
-        out.println("@attribute MetaSVM_score numeric");
-        out.println("@attribute GERP_NR numeric");
-        out.println("@attribute GERP_RS numeric");
+        out.println("@attribute mp1 numeric");
+        out.println("@attribute mp2 numeric");
+        out.println("@attribute mp3 numeric");
+        out.println("@attribute mp4 numeric");
+        out.println("@attribute mp5 numeric");
+        out.println("@attribute mp6 numeric");
+        out.println("@attribute mp7 numeric");
+        out.println("@attribute mp8 numeric");
+        out.println("@attribute mp9 numeric");
+        out.println("@attribute mp10 numeric");
+        out.println("@attribute mp11 numeric");
+        out.println("@attribute mp12 numeric");
+        out.println("@attribute mp13 numeric");
+        out.println("@attribute mp14 numeric");
+        out.println("@attribute mp15 numeric");
+        out.println("@attribute mp16 numeric");
+        out.println("@attribute mp17 numeric");
+        out.println("@attribute mp18 numeric");
+        out.println("@attribute mp19 numeric");
+        out.println("@attribute mp20 numeric");
+        out.println("@attribute mp21 numeric");
+        out.println("@attribute mp22 numeric");
+        out.println("@attribute mp23 numeric");
+        out.println("@attribute mp24 numeric");
+        out.println("@attribute mp25 numeric");
+        out.println("@attribute mp26 numeric");
+        out.println("@attribute mp27 numeric");
+        out.println("@attribute mp28 numeric");
+        out.println("@attribute mp29 numeric");
+        out.println("@attribute mp30 numeric");
+        out.println("@attribute inh numeric");
         out.println("@attribute CADD numeric");
         out.println("@attribute GWAVA numeric");
         out.println("@attribute SIM numeric");
+        out.println("@attribute geno {1/1,0/1}");
+        out.println("@attribute DANN numeric");
         out.println("");
         out.println("@data");
-        out.println("");
         try(BufferedReader br = Files.newBufferedReader(Paths.get(dataRoot + fileName))) {
-            String line;
+            String line = br.readLine(); // reading the header
             boolean cs = true;
             while((line = br.readLine()) != null) {
                 String[] items = line.split("\t", -1);
-                if (cs) {
-                    out.print("CASE");
-                    cs = false;
-                } else {
-                    out.print("CTRL");
+                if (!(items[32].equals("1/1") || items[32].equals("0/1"))) {
+                    continue;
                 }
-                for(int i = 3; i < items.length; i++) {
+                for(int i = 0; i < items.length; i++) {
                     if (items[i].equals(".")) items[i] = "?";
+                }
+                out.print(items[0]);
+                for(int i = 1; i < 32; i++) {
                     out.print("," + items[i]);
                 }
+                out.print("," + items[33]); // CADD
+                out.print("," + items[34]); // GWAVA
+                out.print("," + items[36]); // SIM
+                out.print("," + items[32]); // geno
+                out.print("," + items[35]); // DANN
                 out.println();
             }
             br.close();
