@@ -11,14 +11,16 @@ import weka.core.Instance;
 
 public class Classification {
 
-    public static final String TEST_DATA_ROOT = "data/models/test/final/";
+    public static final String TEST_DATA_ROOT = "data/models/test/final_with_missing/";
+    public String modelResultDir = "";
     RandomForest cls;
 
     public Classification(Properties props) throws Exception {
         // Loading the saved classifier
         String rfModelFile = props.getProperty("randomForestModelFile");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
-
+        this.modelResultDir = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
+        Files.createDirectories(Paths.get(TEST_DATA_ROOT + this.modelResultDir));
     }
 
     public void classify(String fileName) throws Exception {
@@ -27,7 +29,7 @@ public class Classification {
         Instances is = new Instances(fr);
         is.setClassIndex(0);
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + fileName + ".res"), 104857600));
+            new FileWriter(dataRoot + this.modelResultDir + fileName + ".res"), 104857600));
         for (int i = 0; i < is.numInstances(); i++) {
             Instance instance = is.instance(i);
             double[] result = this.cls.distributionForInstance(instance);
@@ -42,7 +44,7 @@ public class Classification {
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(filePath.toString() + ".res"))) {
+            if (!Files.exists(Paths.get(dataRoot + this.modelResultDir + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelResultDir + fileName + ".res")) == 0) {
                 list.add(fileName);
             }
         }
@@ -153,8 +155,8 @@ public class Classification {
                 for(int i = 0; i < items.length; i++) {
                     if (items[i].equals(".")) items[i] = "?";
                 }
-                out.print(items[0]);
-                for(int i = 1; i < 32; i++) {
+                out.print(items[31]);
+                for(int i = 0; i < 31; i++) {
                     out.print("," + items[i]);
                 }
                 out.print("," + items[33]); // CADD
@@ -169,6 +171,64 @@ public class Classification {
         out.close();
     }
 
+    public String sortResults(String fileName) throws Exception {
+        String resDataRoot = TEST_DATA_ROOT + "model4_without_dbnsfp/";
+        List<Result> resList = new ArrayList<Result>();
+        int c = resList.size() - 1;
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(resDataRoot + fileName + ".arff.res"))) {
+            String line = null;
+            int i = 0;
+            while((line = br.readLine()) != null) {
+                double d = Double.parseDouble(line.split(" ")[0]);
+                resList.add(new Result(i, d));
+                i++;
+            }
+            br.close();
+        }
+        Collections.sort(resList, Collections.reverseOrder());
+        for (int i = 0; i < resList.size(); i++) {
+            if (resList.get(i).i == resList.size() - 1) {
+                return i + " " + resList.get(i).d;
+            }
+        }
+        return "";
+    }
+
+    public void sortAll() throws Exception {
+        String dataRoot = TEST_DATA_ROOT;
+        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
+        List<String> list = new ArrayList<String>();
+        for (Path filePath: files) {
+            String fileName = filePath.getFileName().toString();
+            list.add(fileName);
+        }
+        String[] fileNames = list.toArray(new String[list.size()]);
+        Classification that = this;
+        IntFunction<String> sort = new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                String fileName = list.get(i);
+                try {
+                    System.out.println("Processing file " + fileName);
+                    fileName = fileName + " " + that.sortResults(fileName);
+                    System.out.println("Processing file " + fileName + " finished");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return fileName;
+            }
+        };
+
+        Arrays.parallelSetAll(fileNames, sort);
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(
+            new FileWriter(dataRoot + "model4_without_dbnsfp.res"), 104857600));
+        for (String res: fileNames) {
+            out.println(res);
+        }
+        out.close();
+
+    }
 
     class Result implements Comparable<Result> {
 

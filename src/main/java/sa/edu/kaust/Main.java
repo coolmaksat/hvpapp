@@ -40,12 +40,14 @@ public class Main {
         // for (String pheno: topPhenos) {
         //     System.out.println(pheno);
         // }
-        // this.annotations.getDbNSFPAnnotations("test.max");
+        this.annotations.getAnnotations("data/adeeb.vcf");
         // this.classification.classify();
         // this.annotations.readGzip();
         // System.out.println(Arrays.toString(args));
         // this.classification.toArffAll();
-        this.classification.classifyAll();
+        // this.classification.classifyAll();
+        // this.classification.sortAll();
+        // this.annotations.readDbFile();
     }
 
     public static void main(String[] args) throws Exception {
