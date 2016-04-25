@@ -132,11 +132,11 @@ public class Annotations {
                     String[] items = line.split("\t");
                     String chr = items[0];
                     String start = items[1];
-                    // String ref = items[2];
-                    // String alt = items[3];
-                    // String genotype = items[4];
-                    String ref = items[3];
-                    String alt = items[4];
+                    String ref = items[2];
+                    String alt = items[3];
+                    String genotype = items[4];
+                    // String ref = items[3];
+                    // String alt = items[4];
 
                     // Computing end position
                     String end = "NA";
@@ -215,13 +215,13 @@ public class Annotations {
                     }
 
                     that.busy[curi] = false;
-                    // String ret = String.format(
-                    //     "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                    //     chr, start, end, ".", ref, alt, genotype,
-                    //     type, caddGene, caddScore,
-                    //     gwavaScore, dannScore);
-                    String ret = String.format("%s\t%s\t%s",
-                        line, caddScore, dannScore);
+                    String ret = String.format(
+                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                        chr, start, end, ".", ref, alt, genotype,
+                        type, caddGene, caddScore,
+                        gwavaScore, dannScore);
+                    // String ret = String.format("%s\t%s\t%s",
+                    //     line, caddScore, dannScore);
                     return ret;
                 } catch (Exception e) {
                     e.printStackTrace();
