@@ -11,20 +11,21 @@ import weka.core.Instance;
 
 public class Classification {
 
-    public static final String TEST_DATA_ROOT = "data/coding-models/pgp/coding/";
-    public String modelResultDir = "";
+    public String dataRoot = "";
+    public String modelName = "";
     RandomForest cls;
 
     public Classification(Properties props) throws Exception {
         // Loading the saved classifier
         String rfModelFile = props.getProperty("randomForestModelFile");
+        this.dataRoot = props.getProperty("dataRoot");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
-        this.modelResultDir = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
-        Files.createDirectories(Paths.get(TEST_DATA_ROOT + this.modelResultDir));
+        this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
+        Files.createDirectories(Paths.get(this.dataRoot + this.modelName));
     }
 
     public void classify(String fileName) throws Exception {
-        String dataRoot = TEST_DATA_ROOT;
+        String dataRoot = this.dataRoot;
         FileReader fr = new FileReader(dataRoot + fileName);
         Instances is = new Instances(fr);
         is.setClassIndex(0);
@@ -45,7 +46,7 @@ public class Classification {
         };
         Arrays.parallelSetAll(results, clsfy);
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + this.modelResultDir + fileName + ".res"), 104857600));
+            new FileWriter(dataRoot + this.modelName + fileName + ".res"), 104857600));
         for (int i = 0; i < results.length; i++) {
             out.println(results[i]);
         }
@@ -53,12 +54,12 @@ public class Classification {
     }
 
     public void classifyAll() throws Exception {
-        String dataRoot = TEST_DATA_ROOT;
+        String dataRoot = this.dataRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(dataRoot + this.modelResultDir + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelResultDir + fileName + ".res")) == 0) {
+            if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
                 list.add(fileName);
             }
         }
@@ -84,7 +85,7 @@ public class Classification {
     }
 
     public void toArffAll() throws Exception {
-        String dataRoot = TEST_DATA_ROOT;
+        String dataRoot = this.dataRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
@@ -114,7 +115,7 @@ public class Classification {
 
     }
     public void toArff(String fileName) throws Exception {
-        String dataRoot = TEST_DATA_ROOT;
+        String dataRoot = this.dataRoot;
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(dataRoot + fileName + ".arff"), 104857600));
         out.println("@relation " + fileName);
@@ -186,7 +187,7 @@ public class Classification {
     }
 
     public String sortResults(String fileName) throws Exception {
-        String resDataRoot = TEST_DATA_ROOT + "model4_coding/";
+        String resDataRoot = this.dataRoot + this.modelName + "/";
         List<Result> resList = new ArrayList<Result>();
         int c = resList.size() - 1;
         try(BufferedReader br = Files.newBufferedReader(Paths.get(resDataRoot + fileName + ".arff.res"))) {
@@ -209,7 +210,7 @@ public class Classification {
     }
 
     public void sortAll() throws Exception {
-        String dataRoot = TEST_DATA_ROOT;
+        String dataRoot = this.dataRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
@@ -236,7 +237,7 @@ public class Classification {
         Arrays.parallelSetAll(fileNames, sort);
 
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + "model4_coding.res"), 104857600));
+            new FileWriter(dataRoot + this.modelName + ".res"), 104857600));
         for (String res: fileNames) {
             out.println(res);
         }
