@@ -11,7 +11,7 @@ import weka.core.Instance;
 
 public class Classification {
 
-    public static final String TEST_DATA_ROOT = "data/models/test/final_with_missing/";
+    public static final String TEST_DATA_ROOT = "data/coding-models/pgp/coding/";
     public String modelResultDir = "";
     RandomForest cls;
 
@@ -28,12 +28,26 @@ public class Classification {
         FileReader fr = new FileReader(dataRoot + fileName);
         Instances is = new Instances(fr);
         is.setClassIndex(0);
+        String[] results = new String[is.numInstances()];
+        Classification that = this;
+        IntFunction<String> clsfy = new IntFunction<String>() {
+            @Override
+            public String apply(int i) {
+                Instance instance = is.instance(i);
+                try {
+                    double[] result = that.cls.distributionForInstance(instance);
+                    return result[0] + " " + result[1];
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "";
+            }
+        };
+        Arrays.parallelSetAll(results, clsfy);
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(dataRoot + this.modelResultDir + fileName + ".res"), 104857600));
-        for (int i = 0; i < is.numInstances(); i++) {
-            Instance instance = is.instance(i);
-            double[] result = this.cls.distributionForInstance(instance);
-            out.println(result[0] + " " + result[1]);
+        for (int i = 0; i < results.length; i++) {
+            out.println(results[i]);
         }
         out.close();
     }
@@ -172,7 +186,7 @@ public class Classification {
     }
 
     public String sortResults(String fileName) throws Exception {
-        String resDataRoot = TEST_DATA_ROOT + "model4_without_dbnsfp/";
+        String resDataRoot = TEST_DATA_ROOT + "model4_coding/";
         List<Result> resList = new ArrayList<Result>();
         int c = resList.size() - 1;
         try(BufferedReader br = Files.newBufferedReader(Paths.get(resDataRoot + fileName + ".arff.res"))) {
@@ -222,7 +236,7 @@ public class Classification {
         Arrays.parallelSetAll(fileNames, sort);
 
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + "model4_without_dbnsfp.res"), 104857600));
+            new FileWriter(dataRoot + "model4_coding.res"), 104857600));
         for (String res: fileNames) {
             out.println(res);
         }

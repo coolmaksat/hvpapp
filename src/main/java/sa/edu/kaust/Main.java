@@ -16,7 +16,7 @@ public class Main {
         this.props = this.getProperties();
         // this.phenoSim = new PhenoSim(this.props);
         this.annotations = new Annotations(this.props);
-        // this.classification = new Classification(this.props);
+        this.classification = new Classification(this.props);
     }
 
     public Properties getProperties() throws Exception {
@@ -47,10 +47,10 @@ public class Main {
         // this.annotations.readGzip();
         // System.out.println(Arrays.toString(args));
         // this.classification.toArffAll();
-        // this.classification.classifyAll();
+        this.classification.classifyAll();
         // this.classification.sortAll();
         // this.annotations.readDbFile();
-        this.runAnnotations(args);
+        // this.runAnnotations(args);
     }
 
     public void runAnnotations(String[] args) throws Exception {
