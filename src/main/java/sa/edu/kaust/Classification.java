@@ -23,7 +23,7 @@ public class Classification {
         this.resultRoot = props.getProperty("resultRoot");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
-        Files.createDirectories(Paths.get(this.dataRoot + this.modelName));
+        Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
     }
 
     public void classify(int ind) throws Exception {
