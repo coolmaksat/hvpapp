@@ -12,6 +12,7 @@ import weka.core.Instance;
 public class Classification {
 
     public String dataRoot = "";
+    public String resultRoot = "";
     public String modelName = "";
     RandomForest cls;
 
@@ -19,13 +20,14 @@ public class Classification {
         // Loading the saved classifier
         String rfModelFile = props.getProperty("randomForestModelFile");
         this.dataRoot = props.getProperty("dataRoot");
+        this.resultRoot = props.getProperty("resultRoot");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
         Files.createDirectories(Paths.get(this.dataRoot + this.modelName));
     }
 
     public void classify(int ind) throws Exception {
-        String dataRoot = this.dataRoot;
+        String dataRoot = this.resultRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
@@ -41,7 +43,7 @@ public class Classification {
     }
 
     public void classify(String fileName) throws Exception {
-        String dataRoot = this.dataRoot;
+        String dataRoot = this.resultRoot;
         FileReader fr = new FileReader(dataRoot + fileName);
         Instances is = new Instances(fr);
         is.setClassIndex(0);
@@ -70,7 +72,7 @@ public class Classification {
     }
 
     public void classifyAll() throws Exception {
-        String dataRoot = this.dataRoot;
+        String dataRoot = this.resultRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
@@ -132,8 +134,9 @@ public class Classification {
     }
     public void toArff(String fileName) throws Exception {
         String dataRoot = this.dataRoot;
+        String resultRoot = this.resultRoot;
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + fileName + ".arff"), 104857600));
+            new FileWriter(resultRoot + fileName + ".arff"), 104857600));
         out.println("@relation " + fileName);
         out.println();
         out.println("@attribute TYPE {CASE,CTRL}");
@@ -203,7 +206,7 @@ public class Classification {
     }
 
     public String sortResults(String fileName) throws Exception {
-        String resDataRoot = this.dataRoot + this.modelName + "/";
+        String resDataRoot = this.resultRoot + this.modelName + "/";
         List<Result> resList = new ArrayList<Result>();
         int c = resList.size() - 1;
         try(BufferedReader br = Files.newBufferedReader(Paths.get(resDataRoot + fileName + ".arff.res"))) {
@@ -253,7 +256,7 @@ public class Classification {
         Arrays.parallelSetAll(fileNames, sort);
 
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + this.modelName + ".res"), 104857600));
+            new FileWriter(this.resultRoot + this.modelName + ".res"), 104857600));
         for (String res: fileNames) {
             out.println(res);
         }
