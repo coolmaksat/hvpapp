@@ -47,11 +47,32 @@ public class Main {
         // this.annotations.readGzip();
         // System.out.println(Arrays.toString(args));
         // this.classification.toArffAll();
-        this.classification.classifyAll();
+        // this.classification.classifyAll();
         // this.classification.sortAll();
         // this.annotations.readDbFile();
         // this.runAnnotations(args);
+        this.runCommand(args);
     }
+
+    public void runCommand(String[] args) throws Exception {
+        if (args.length == 0) {
+            throw Exception("Please provide command name");
+        }
+        if (args[0].equals("toArffAll")) {
+            this.classification.toArffAll();
+        } else if (args[0].equals("classifyAll")) {
+            this.classification.classifyAll();
+        } else if (args[0].equals("sortAll")) {
+            this.classification.sortAll();
+        } else if (args[0].equals("classify")) {
+            if (args.length != 2) {
+                throw Exception("Please provide arff file index");
+            }
+            int ind = Integer.parseInt(args[1]);
+            this.classification.classify(ind);
+        }
+    }
+
 
     public void runAnnotations(String[] args) throws Exception {
         String root = args[0];

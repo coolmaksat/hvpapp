@@ -24,6 +24,20 @@ public class Classification {
         Files.createDirectories(Paths.get(this.dataRoot + this.modelName));
     }
 
+    public void classify(int ind) throws Exception {
+        String dataRoot = this.dataRoot;
+        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
+        List<String> list = new ArrayList<String>();
+        for (Path filePath: files) {
+            String fileName = filePath.getFileName().toString();
+            if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
+                list.add(fileName);
+            }
+        }
+        String[] fileNames = list.toArray(new String[list.size()]);
+        this.classify(fileNames[ind]);
+    }
+
     public void classify(String fileName) throws Exception {
         String dataRoot = this.dataRoot;
         FileReader fr = new FileReader(dataRoot + fileName);
