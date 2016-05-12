@@ -15,7 +15,7 @@ public class Main {
     public Main() throws Exception {
         this.props = this.getProperties();
         // this.phenoSim = new PhenoSim(this.props);
-        this.annotations = new Annotations(this.props);
+        // this.annotations = new Annotations(this.props);
         this.classification = new Classification(this.props);
     }
 
