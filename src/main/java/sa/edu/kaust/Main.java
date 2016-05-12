@@ -56,7 +56,7 @@ public class Main {
 
     public void runCommand(String[] args) throws Exception {
         if (args.length == 0) {
-            throw Exception("Please provide command name");
+            throw new Exception("Please provide command name");
         }
         if (args[0].equals("toArffAll")) {
             this.classification.toArffAll();
@@ -66,7 +66,7 @@ public class Main {
             this.classification.sortAll();
         } else if (args[0].equals("classify")) {
             if (args.length != 2) {
-                throw Exception("Please provide arff file index");
+                throw new Exception("Please provide arff file index");
             }
             int ind = Integer.parseInt(args[1]);
             this.classification.classify(ind);
