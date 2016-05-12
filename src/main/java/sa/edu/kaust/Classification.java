@@ -104,11 +104,12 @@ public class Classification {
 
     public void toArffAll() throws Exception {
         String dataRoot = this.dataRoot;
+        String resultRoot = this.resultRoot;
         DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(filePath.toString() + ".arff"))) {
+            if (!Files.exists(Paths.get(resultRoot + fileName + ".arff"))) {
                 list.add(fileName);
             }
         }

@@ -58,6 +58,7 @@ public class Main {
         if (args.length == 0) {
             throw new Exception("Please provide command name");
         }
+        System.out.println("Running command " + args[0]);
         if (args[0].equals("toArffAll")) {
             this.classification.toArffAll();
         } else if (args[0].equals("classifyAll")) {
