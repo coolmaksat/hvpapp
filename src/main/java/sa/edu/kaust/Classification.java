@@ -32,15 +32,17 @@ public class Classification {
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
-                list.add(fileName);
-            }
+            list.add(fileName);
         }
         String[] fileNames = list.toArray(new String[list.size()]);
-        Arrays.sort(fileNames);
-        System.out.println("Starting classification for " + fileNames[ind]);
-        this.classify(fileNames[ind]);
-        System.out.println("Classification finished for " + fileNames[ind]);
+        String fileName = fileNames[ind];
+        if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
+            System.out.println("Starting classification for " + fileName);
+            this.classify(fileName);
+            System.out.println("Classification finished for " + fileName);
+        } else {
+            System.out.println("Not running classification for " + fileName);
+        }
     }
 
     public void classify(String fileName) throws Exception {
