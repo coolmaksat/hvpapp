@@ -37,6 +37,7 @@ public class Classification {
             }
         }
         String[] fileNames = list.toArray(new String[list.size()]);
+        Arrays.sort(fileNames);
         System.out.println("Starting classification for " + fileNames[ind]);
         this.classify(fileNames[ind]);
         System.out.println("Classification finished for " + fileNames[ind]);
