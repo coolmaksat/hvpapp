@@ -14,6 +14,7 @@ public class Classification {
     public String dataRoot = "";
     public String resultRoot = "";
     public String modelName = "";
+    public String arffFilesPath = "";
     RandomForest cls;
 
     public Classification(Properties props) throws Exception {
@@ -21,9 +22,31 @@ public class Classification {
         String rfModelFile = props.getProperty("randomForestModelFile");
         this.dataRoot = props.getProperty("dataRoot");
         this.resultRoot = props.getProperty("resultRoot");
+        this.arffFilesPath = props.getProperty("arffFiles");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
         Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
+    }
+
+    public void classifyFiles(int ind) throws Exception {
+        String dataRoot = this.resultRoot;
+        List<String> list = new ArrayList<String>();
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.arffFilesPath))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                list.add(line);
+            }
+            br.close();
+        }
+        String[] fileNames = list.toArray(new String[list.size()]);
+        String fileName = fileNames[ind];
+        if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
+            System.out.println("Starting classification for " + fileName);
+            this.classify(fileName);
+            System.out.println("Classification finished for " + fileName);
+        } else {
+            System.out.println("Not running classification for " + fileName);
+        }
     }
 
     public void classify(int ind) throws Exception {
@@ -44,6 +67,7 @@ public class Classification {
             System.out.println("Not running classification for " + fileName);
         }
     }
+
 
     public void classify(String fileName) throws Exception {
         String dataRoot = this.resultRoot;

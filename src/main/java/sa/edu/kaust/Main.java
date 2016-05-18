@@ -71,6 +71,12 @@ public class Main {
             }
             int ind = Integer.parseInt(args[1]);
             this.classification.classify(ind);
+        } else if (args[0].equals("classifyFiles")) {
+            if (args.length != 3) {
+                throw new Exception("Please provide arff file index");
+            }
+            int ind = Integer.parseInt(args[1]);
+            this.classification.classifyFiles(ind);
         }
     }
 
