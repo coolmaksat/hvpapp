@@ -164,40 +164,40 @@ public class Annotations {
                         curi = that.cur;
                     }
 
-                    TabixReader tabix = that.caddTabixes[curi];
-                    TabixReader.Iterator iter = tabix.query(query);
-                    String caddScore = ".";
-                    String caddGene = ".";
-                    String type = "Coding";
-                    String s;
-                    while (iter != null && (s = iter.next()) != null) {
-                        String[] results = s.split("\t");
-                        if (results[2].equals(ref) && results[3].equals(alt)) {
-                            caddScore = results[7];
-                            if (!results[6].equals("NA")) {
-                                caddGene = results[6];
-                                if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
-                                    caddGene = that.ccdsGenes.get(caddGene);
-                                }
-                            }
+                    // TabixReader tabix = that.caddTabixes[curi];
+                    // TabixReader.Iterator iter = tabix.query(query);
+                    // String caddScore = ".";
+                    // String caddGene = ".";
+                    // String type = "Coding";
+                    // String s;
+                    // while (iter != null && (s = iter.next()) != null) {
+                    //     String[] results = s.split("\t");
+                    //     if (results[2].equals(ref) && results[3].equals(alt)) {
+                    //         caddScore = results[7];
+                    //         if (!results[6].equals("NA")) {
+                    //             caddGene = results[6];
+                    //             if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
+                    //                 caddGene = that.ccdsGenes.get(caddGene);
+                    //             }
+                    //         }
 
-                            if (!results[4].equals("CodingTranscript")) {
-                                type = "NonCoding";
-                            }
+                    //         if (!results[4].equals("CodingTranscript")) {
+                    //             type = "NonCoding";
+                    //         }
 
-                            break;
-                        }
-                    }
+                    //         break;
+                    //     }
+                    // }
 
-                    tabix = that.dannTabixes[curi];
-                    iter = tabix.query(query);
-                    String dannScore = ".";
-                    while (iter != null && (s = iter.next()) != null) {
-                        String[] results = s.split("\t");
-                        if (results[2].equals(ref) && results[3].equals(alt)) {
-                            dannScore = results[4];
-                        }
-                    }
+                    // tabix = that.dannTabixes[curi];
+                    // iter = tabix.query(query);
+                    // String dannScore = ".";
+                    // while (iter != null && (s = iter.next()) != null) {
+                    //     String[] results = s.split("\t");
+                    //     if (results[2].equals(ref) && results[3].equals(alt)) {
+                    //         dannScore = results[4];
+                    //     }
+                    // }
 
                     tabix = that.gwavaTabixes[curi];
                     iter = tabix.query("chr" + query);
@@ -213,7 +213,10 @@ public class Annotations {
                             gwavaScore = Double.toString(sum);
                         }
                     }
-
+                    String type = items[7]
+                    String caddGene = items[8];
+                    String caddScore = items[9];
+                    String dannScore = items[11];
                     that.busy[curi] = false;
                     String ret = String.format(
                         "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",

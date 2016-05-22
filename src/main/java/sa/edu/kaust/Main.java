@@ -15,8 +15,8 @@ public class Main {
     public Main() throws Exception {
         this.props = this.getProperties();
         // this.phenoSim = new PhenoSim(this.props);
-        // this.annotations = new Annotations(this.props);
-        this.classification = new Classification(this.props);
+        this.annotations = new Annotations(this.props);
+        // this.classification = new Classification(this.props);
     }
 
     public Properties getProperties() throws Exception {
@@ -50,8 +50,8 @@ public class Main {
         // this.classification.classifyAll();
         // this.classification.sortAll();
         // this.annotations.readDbFile();
-        // this.runAnnotations(args);
-        this.runCommand(args);
+        this.runAnnotations(args);
+        // this.runCommand(args);
     }
 
     public void runCommand(String[] args) throws Exception {
@@ -72,7 +72,7 @@ public class Main {
             int ind = Integer.parseInt(args[1]);
             this.classification.classify(ind);
         } else if (args[0].equals("classifyFiles")) {
-            if (args.length != 3) {
+            if (args.length != 2) {
                 throw new Exception("Please provide arff file index");
             }
             int ind = Integer.parseInt(args[1]);
@@ -83,20 +83,20 @@ public class Main {
 
     public void runAnnotations(String[] args) throws Exception {
         String root = args[0];
-        // File rootDir = new File(root);
-        // String[] files = rootDir.list(new FilenameFilter(){
-        //     @Override
-        //     public boolean accept(File dir, String name) {
-        //         return name.toLowerCase().endsWith(".vcf");
-        //     }
-        // });
-        List<String> files = new ArrayList<String>();
-        try (BufferedReader br = Files.newBufferedReader(Paths.get("data/maxat.txt"))) {
-            String line = null;
-            while((line = br.readLine()) != null) {
-                files.add(line + ".vcf");
+        File rootDir = new File(root);
+        String[] files = rootDir.list(new FilenameFilter(){
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".out");
             }
-        }
+        });
+        // List<String> files = new ArrayList<String>();
+        // try (BufferedReader br = Files.newBufferedReader(Paths.get("data/maxat.txt"))) {
+        //     String line = null;
+        //     while((line = br.readLine()) != null) {
+        //         files.add(line + ".vcf");
+        //     }
+        // }
 
         int id = Integer.parseInt(args[1]);
         if (!root.endsWith("/")) {
