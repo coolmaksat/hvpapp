@@ -160,8 +160,8 @@ public class Classification {
         Arrays.parallelSetAll(fileNames, arff);
 
     }
+
     public void toArff(String fileName) throws Exception {
-        public void toArff(String fileName) throws Exception {
         String dataRoot = this.dataRoot;
         String resultRoot = this.resultRoot;
         PrintWriter out = new PrintWriter(new BufferedWriter(
@@ -256,7 +256,6 @@ public class Classification {
            br.close();
        }
        out.close();
-   }
     }
 
     public String sortResults(String fileName) throws Exception {

@@ -46,12 +46,12 @@ public class Main {
         // this.classification.classify();
         // this.annotations.readGzip();
         // System.out.println(Arrays.toString(args));
-        this.classification.toArffAll();
+        // this.classification.toArffAll();
         // this.classification.classifyAll();
         // this.classification.sortAll();
         // this.annotations.readDbFile();
         // this.runAnnotations(args);
-        // this.runCommand(args);
+        this.runCommand(args);
     }
 
     public void runCommand(String[] args) throws Exception {
