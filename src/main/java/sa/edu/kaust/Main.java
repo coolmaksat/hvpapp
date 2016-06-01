@@ -46,11 +46,11 @@ public class Main {
         // this.classification.classify();
         // this.annotations.readGzip();
         // System.out.println(Arrays.toString(args));
-        // this.classification.toArffAll();
+        this.classification.toArffAll();
         // this.classification.classifyAll();
         // this.classification.sortAll();
         // this.annotations.readDbFile();
-        this.runAnnotations(args);
+        // this.runAnnotations(args);
         // this.runCommand(args);
     }
 
@@ -87,7 +87,7 @@ public class Main {
         String[] files = rootDir.list(new FilenameFilter(){
             @Override
             public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".out");
+                return name.toLowerCase().endsWith(".vcf");
             }
         });
         // List<String> files = new ArrayList<String>();
@@ -102,7 +102,7 @@ public class Main {
         if (!root.endsWith("/")) {
             root = root + "/";
         }
-        this.annotations.getAnnotations(root + files.get(id));
+        this.annotations.getAnnotations(root + files[id]);
     }
 
     public static void main(String[] args) throws Exception {

@@ -161,76 +161,102 @@ public class Classification {
 
     }
     public void toArff(String fileName) throws Exception {
+        public void toArff(String fileName) throws Exception {
         String dataRoot = this.dataRoot;
         String resultRoot = this.resultRoot;
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(resultRoot + fileName + ".arff"), 104857600));
+           new FileWriter(resultRoot + fileName + ".arff"), 104857600));
         out.println("@relation " + fileName);
         out.println();
         out.println("@attribute TYPE {CASE,CTRL}");
-        out.println("@attribute mp1 numeric");
-        out.println("@attribute mp2 numeric");
-        out.println("@attribute mp3 numeric");
-        out.println("@attribute mp4 numeric");
-        out.println("@attribute mp5 numeric");
-        out.println("@attribute mp6 numeric");
-        out.println("@attribute mp7 numeric");
-        out.println("@attribute mp8 numeric");
-        out.println("@attribute mp9 numeric");
-        out.println("@attribute mp10 numeric");
-        out.println("@attribute mp11 numeric");
-        out.println("@attribute mp12 numeric");
-        out.println("@attribute mp13 numeric");
-        out.println("@attribute mp14 numeric");
-        out.println("@attribute mp15 numeric");
-        out.println("@attribute mp16 numeric");
-        out.println("@attribute mp17 numeric");
-        out.println("@attribute mp18 numeric");
-        out.println("@attribute mp19 numeric");
-        out.println("@attribute mp20 numeric");
-        out.println("@attribute mp21 numeric");
-        out.println("@attribute mp22 numeric");
-        out.println("@attribute mp23 numeric");
-        out.println("@attribute mp24 numeric");
-        out.println("@attribute mp25 numeric");
-        out.println("@attribute mp26 numeric");
-        out.println("@attribute mp27 numeric");
-        out.println("@attribute mp28 numeric");
-        out.println("@attribute mp29 numeric");
-        out.println("@attribute mp30 numeric");
+        out.println("@attribute HP_0000078 numeric");
+        out.println("@attribute HP_0000291 numeric");
+        out.println("@attribute HP_0000708 numeric");
+        out.println("@attribute HP_0001001 numeric");
+        out.println("@attribute HP_0001939 numeric");
+        out.println("@attribute HP_0002086 numeric");
+        out.println("@attribute HP_0006476 numeric");
+        out.println("@attribute HP_0009126 numeric");
+        out.println("@attribute HP_0010515 numeric");
+        out.println("@attribute HP_0010948 numeric");
+        out.println("@attribute HP_0010987 numeric");
+        out.println("@attribute HP_0011017 numeric");
+        out.println("@attribute HP_0011025 numeric");
+        out.println("@attribute HP_0011277 numeric");
+        out.println("@attribute HP_0011482 numeric");
+        out.println("@attribute HP_0011915 numeric");
+        out.println("@attribute HP_0040063 numeric");
+        out.println("@attribute MP_0000003 numeric");
+        out.println("@attribute MP_0000358 numeric");
+        out.println("@attribute MP_0000428 numeric");
+        out.println("@attribute MP_0000462 numeric");
+        out.println("@attribute MP_0000516 numeric");
+        out.println("@attribute MP_0000685 numeric");
+        out.println("@attribute MP_0000716 numeric");
+        out.println("@attribute MP_0001188 numeric");
+        out.println("@attribute MP_0001213 numeric");
+        out.println("@attribute MP_0001270 numeric");
+        out.println("@attribute MP_0001533 numeric");
+        out.println("@attribute MP_0001663 numeric");
+        out.println("@attribute MP_0001672 numeric");
+        out.println("@attribute MP_0001764 numeric");
+        out.println("@attribute MP_0001790 numeric");
+        out.println("@attribute MP_0001983 numeric");
+        out.println("@attribute MP_0002060 numeric");
+        out.println("@attribute MP_0002089 numeric");
+        out.println("@attribute MP_0002095 numeric");
+        out.println("@attribute MP_0002106 numeric");
+        out.println("@attribute MP_0002109 numeric");
+        out.println("@attribute MP_0002138 numeric");
+        out.println("@attribute MP_0002139 numeric");
+        out.println("@attribute MP_0002163 numeric");
+        out.println("@attribute MP_0002164 numeric");
+        out.println("@attribute MP_0002396 numeric");
+        out.println("@attribute MP_0003385 numeric");
+        out.println("@attribute MP_0004133 numeric");
+        out.println("@attribute MP_0004134 numeric");
+        out.println("@attribute MP_0005408 numeric");
+        out.println("@attribute MP_0005451 numeric");
+        out.println("@attribute MP_0005621 numeric");
+        out.println("@attribute MP_0009389 numeric");
+        out.println("@attribute MP_0010678 numeric");
+        out.println("@attribute MP_0010769 numeric");
+        out.println("@attribute MP_0012719 numeric");
+        out.println("@attribute MP_0013328 numeric");
         out.println("@attribute inh numeric");
-        out.println("@attribute CADD numeric");
-        out.println("@attribute GWAVA numeric");
-        out.println("@attribute SIM numeric");
+        out.println("@attribute cadd numeric");
+        out.println("@attribute gwava numeric");
+        out.println("@attribute sim numeric");
+        out.println("@attribute dann numeric");
         out.println("@attribute geno {1/1,0/1}");
-        out.println("@attribute DANN numeric");
         out.println("");
         out.println("@data");
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(dataRoot + fileName))) {
-            String line = br.readLine(); // reading the header
-            boolean cs = true;
-            while((line = br.readLine()) != null) {
-                String[] items = line.split("\t", -1);
-                if (!(items[32].equals("1/1") || items[32].equals("0/1"))) {
-                    continue;
-                }
-                for(int i = 0; i < items.length; i++) {
-                    if (items[i].equals(".")) items[i] = "?";
-                }
-                out.print(items[31]);
-                for(int i = 0; i < 31; i++) {
-                    out.print("," + items[i]);
-                }
-                out.print("," + items[33]); // CADD
-                out.print("," + items[34]); // GWAVA
-                out.print("," + items[36]); // SIM
-                out.print("," + items[32]); // geno
-                out.print("," + items[35]); // DANN
-                out.println();
-            }
-            br.close();
-        }
-        out.close();
+       try(BufferedReader br = Files.newBufferedReader(Paths.get(dataRoot + fileName))) {
+           String line = br.readLine(); // reading the header
+           boolean cs = true;
+           while((line = br.readLine()) != null) {
+               String[] items = line.split("\t", -1);
+               if (!(items[56].equals("1/1") || items[56].equals("0/1"))) {
+                   continue;
+               }
+               for(int i = 0; i < items.length; i++) {
+                   if (items[i].equals(".")) items[i] = "?";
+               }
+               out.print(items[0]);
+               for(int i = 1; i < 56; i++) {
+                   out.print("," + items[i]);
+               }
+               out.print("," + items[57]); // CADD
+               out.print("," + items[58]); // GWAVA
+               out.print("," + items[60]); // SIM
+               out.print("," + items[59]); // DANN
+               out.print("," + items[56]); // geno
+               out.println();
+           }
+           br.close();
+       }
+       out.close();
+   }
     }
 
     public String sortResults(String fileName) throws Exception {

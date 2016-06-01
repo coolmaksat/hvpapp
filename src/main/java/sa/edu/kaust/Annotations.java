@@ -22,7 +22,7 @@ public class Annotations {
 
     public Annotations(Properties props) throws Exception {
         this.props = props;
-        this.tabixN = 30;
+        this.tabixN = 50;
         this.caddTabixes = new TabixReader[this.tabixN];
         this.dannTabixes = new TabixReader[this.tabixN];
         this.gwavaTabixes = new TabixReader[this.tabixN];
@@ -131,28 +131,30 @@ public class Annotations {
                     String line = data[i];
                     String[] items = line.split("\t");
                     String chr = items[0];
-                    String start = items[1];
-                    String ref = items[2];
-                    String alt = items[3];
-                    String genotype = items[4];
+                    String pos = items[1];
+                    String rsId = items[2];
+                    String ref = items[3];
+                    String alt = items[4];
+                    String genotype = items[9].split(":")[0];
                     // String ref = items[3];
                     // String alt = items[4];
 
                     // Computing end position
+                    String begin = pos;
                     String end = "NA";
                     int refLength = ref.length();
                     int altLength = alt.length();
 
                     if (refLength == altLength) {
-                        end = start;
+                        end = begin;
                     } else if (refLength < altLength) {
-                        end = Integer.toString(Integer.parseInt(start) + 1);
+                        end = Integer.toString(Integer.parseInt(begin) + 1);
                     } else {
-                        start = Integer.toString(Integer.parseInt(start) + 1);
+                        begin = Integer.toString(Integer.parseInt(pos) + 1);
                         end = Integer.toString(
-                            Integer.parseInt(start) + refLength - altLength);
+                            Integer.parseInt(begin) + refLength - altLength);
                     }
-                    String query = chr + ":" + start + "-" + end;
+                    String query = chr + ":" + begin + "-" + end;
                     // System.out.println(query);
                     int curi = that.cur;
                     synchronized(this) {
@@ -164,63 +166,58 @@ public class Annotations {
                         curi = that.cur;
                     }
 
-                    // TabixReader tabix = that.caddTabixes[curi];
-                    // TabixReader.Iterator iter = tabix.query(query);
-                    // String caddScore = ".";
-                    // String caddGene = ".";
-                    // String type = "Coding";
-                    // String s;
-                    // while (iter != null && (s = iter.next()) != null) {
-                    //     String[] results = s.split("\t");
-                    //     if (results[2].equals(ref) && results[3].equals(alt)) {
-                    //         caddScore = results[7];
-                    //         if (!results[6].equals("NA")) {
-                    //             caddGene = results[6];
-                    //             if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
-                    //                 caddGene = that.ccdsGenes.get(caddGene);
-                    //             }
-                    //         }
+                    TabixReader tabix = that.caddTabixes[curi];
+                    TabixReader.Iterator iter = tabix.query(query);
+                    String caddScore = ".";
+                    String caddGene = ".";
+                    String type = "Coding";
+                    String s;
+                    while (iter != null && (s = iter.next()) != null) {
+                        String[] results = s.split("\t");
+                        if (results[2].equals(ref) && results[3].equals(alt)) {
+                            caddScore = results[7];
+                            if (!results[6].equals("NA")) {
+                                caddGene = results[6];
+                                if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
+                                    caddGene = that.ccdsGenes.get(caddGene);
+                                }
+                            }
 
-                    //         if (!results[4].equals("CodingTranscript")) {
-                    //             type = "NonCoding";
-                    //         }
+                            if (!results[4].equals("CodingTranscript")) {
+                                type = "NonCoding";
+                            }
 
-                    //         break;
-                    //     }
-                    // }
+                            break;
+                        }
+                    }
 
-                    // tabix = that.dannTabixes[curi];
-                    // iter = tabix.query(query);
-                    // String dannScore = ".";
-                    // while (iter != null && (s = iter.next()) != null) {
-                    //     String[] results = s.split("\t");
-                    //     if (results[2].equals(ref) && results[3].equals(alt)) {
-                    //         dannScore = results[4];
-                    //     }
-                    // }
+                    tabix = that.dannTabixes[curi];
+                    iter = tabix.query(query);
+                    String dannScore = ".";
+                    while (iter != null && (s = iter.next()) != null) {
+                        String[] results = s.split("\t");
+                        if (results[2].equals(ref) && results[3].equals(alt)) {
+                            dannScore = results[4];
+                        }
+                    }
 
                     tabix = that.gwavaTabixes[curi];
                     iter = tabix.query("chr" + query);
                     String gwavaScore = ".";
                     if (iter != null && (s = iter.next()) != null) {
                         String[] results = s.split("\t");
-                        if (results[1].equals(start)) {
-                            double sum = 0;
-                            sum += Double.parseDouble(results[4]);
-                            sum += Double.parseDouble(results[5]);
-                            sum += Double.parseDouble(results[6]);
-                            sum /= 3;
-                            gwavaScore = Double.toString(sum);
-                        }
+                        double sum = 0;
+                        sum += Double.parseDouble(results[4]);
+                        sum += Double.parseDouble(results[5]);
+                        sum += Double.parseDouble(results[6]);
+                        sum /= 3;
+                        gwavaScore = Double.toString(sum);
                     }
-                    String type = items[7]
-                    String caddGene = items[8];
-                    String caddScore = items[9];
-                    String dannScore = items[11];
+
                     that.busy[curi] = false;
                     String ret = String.format(
-                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                        chr, start, end, ".", ref, alt, genotype,
+                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                        chr, pos, rsId, ref, alt, genotype,
                         type, caddGene, caddScore,
                         gwavaScore, dannScore);
                     // String ret = String.format("%s\t%s\t%s",
