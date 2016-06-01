@@ -15,8 +15,6 @@ public class Main {
     public Main() throws Exception {
         this.props = this.getProperties();
         // this.phenoSim = new PhenoSim(this.props);
-        this.annotations = new Annotations(this.props);
-        // this.classification = new Classification(this.props);
     }
 
     public Properties getProperties() throws Exception {
@@ -42,19 +40,13 @@ public class Main {
         // for (String pheno: topPhenos) {
         //     System.out.println(pheno);
         // }
-        // this.annotations.getAnnotations("data/adeeb.vcf");
-        // this.classification.classify();
-        // this.annotations.readGzip();
-        // System.out.println(Arrays.toString(args));
-        // this.classification.toArffAll();
-        // this.classification.classifyAll();
-        // this.classification.sortAll();
-        // this.annotations.readDbFile();
         // this.runAnnotations(args);
-        this.runCommand(args);
+        this.runClassifications(args);
     }
 
-    public void runCommand(String[] args) throws Exception {
+    public void runClassifications(String[] args) throws Exception {
+        this.classification = new Classification(this.props);
+
         if (args.length == 0) {
             throw new Exception("Please provide command name");
         }
@@ -82,6 +74,8 @@ public class Main {
 
 
     public void runAnnotations(String[] args) throws Exception {
+        this.annotations = new Annotations(this.props);
+
         String root = args[0];
         File rootDir = new File(root);
         String[] files = rootDir.list(new FilenameFilter(){
