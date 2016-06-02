@@ -136,7 +136,7 @@ public class Classification {
         List<String> list = new ArrayList<String>();
         for (Path filePath: files) {
             String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(resultRoot + fileName + ".arff"))) {
+            if (!Files.exists(Paths.get(resultRoot + fileName + ".arff"))  || Files.size(Paths.get(resultRoot + fileName + ".arff")) == 0) {
                 list.add(fileName);
             }
         }
@@ -314,6 +314,10 @@ public class Classification {
             out.println(res);
         }
         out.close();
+
+    }
+
+    public void getMissingResults() {
 
     }
 
