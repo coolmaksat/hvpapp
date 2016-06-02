@@ -309,7 +309,7 @@ public class Classification {
         Arrays.parallelSetAll(fileNames, sort);
 
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(this.resultRoot + this.modelName + ".res"), 104857600));
+            new FileWriter(this.resultRoot + this.modelName.substring(0, this.modelName.length() - 1) + ".res"), 104857600));
         for (String res: fileNames) {
             out.println(res);
         }
