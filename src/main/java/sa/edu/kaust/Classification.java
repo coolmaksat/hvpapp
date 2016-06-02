@@ -223,12 +223,13 @@ public class Classification {
         out.println("@attribute MP_0010769 numeric");
         out.println("@attribute MP_0012719 numeric");
         out.println("@attribute MP_0013328 numeric");
-        out.println("@attribute inh numeric");
+        // out.println("@attribute inh numeric");
         out.println("@attribute cadd numeric");
         out.println("@attribute gwava numeric");
         out.println("@attribute sim numeric");
         out.println("@attribute dann numeric");
         out.println("@attribute geno {1/1,0/1}");
+        out.println("@attribute moi_rz numeric");
         out.println("");
         out.println("@data");
        try(BufferedReader br = Files.newBufferedReader(Paths.get(dataRoot + fileName))) {
@@ -236,21 +237,21 @@ public class Classification {
            boolean cs = true;
            while((line = br.readLine()) != null) {
                String[] items = line.split("\t", -1);
-               if (!(items[56].equals("1/1") || items[56].equals("0/1"))) {
+               if (!(items[58].equals("1/1") || items[58].equals("0/1"))) {
                    continue;
                }
                for(int i = 0; i < items.length; i++) {
                    if (items[i].equals(".")) items[i] = "?";
                }
-               out.print(items[0]);
-               for(int i = 1; i < 56; i++) {
+               out.print("CTRL");
+               for(int i = 0; i < items.length; i++) {
                    out.print("," + items[i]);
                }
-               out.print("," + items[57]); // CADD
-               out.print("," + items[58]); // GWAVA
-               out.print("," + items[60]); // SIM
-               out.print("," + items[59]); // DANN
-               out.print("," + items[56]); // geno
+               // out.print("," + items[57]); // CADD
+               // out.print("," + items[58]); // GWAVA
+               // out.print("," + items[60]); // SIM
+               // out.print("," + items[59]); // DANN
+               // out.print("," + items[56]); // geno
                out.println();
            }
            br.close();
