@@ -15,7 +15,7 @@ public class Annotations {
     boolean[] busy;
     int tabixN;
     int cur = 0;
-    TabixReader[] caddTabixes;
+    TabixReader[] tabixes;
     TabixReader[] dannTabixes;
     TabixReader[] gwavaTabixes;
     Map<String, String> ccdsGenes;
@@ -23,14 +23,10 @@ public class Annotations {
     public Annotations(Properties props) throws Exception {
         this.props = props;
         this.tabixN = 50;
-        this.caddTabixes = new TabixReader[this.tabixN];
-        this.dannTabixes = new TabixReader[this.tabixN];
-        this.gwavaTabixes = new TabixReader[this.tabixN];
+        this.tabixes = new TabixReader[this.tabixN];
         this.busy = new boolean[this.tabixN];
         for (int i = 0; i < this.tabixN; i++) {
-            this.caddTabixes[i] = new TabixReader(this.props.getProperty("caddPath"));
-            this.dannTabixes[i] = new TabixReader(this.props.getProperty("dannPath"));
-            this.gwavaTabixes[i] = new TabixReader(this.props.getProperty("gwavaPath"));
+            this.tabixes[i] = new TabixReader(this.props.getProperty("dbPath"));
         }
 
         this.ccdsGenes = new HashMap<String, String>();
@@ -108,7 +104,7 @@ public class Annotations {
         }
     }
 
-    public Map<String, Double> getAnnotations(String vcfFilePath) throws Exception {
+    public Map<String, Double> getAnnotations(String vcfFilePath, String mode) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(vcfFilePath + ".out"), 1073741824));
@@ -117,6 +113,14 @@ public class Annotations {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.startsWith("#")) {
+                    continue;
+                }
+                String[] items = line.split("\t");
+                String genotype = items[9].split(":")[0];
+                if !(genotype.equals("0/1") || genotype.equals("1/1")){
+                    continue;
+                }
+                if (mode.equals("recessive") && genotype.equals("0/1")){
                     continue;
                 }
                 dataList.add(line);
@@ -166,52 +170,27 @@ public class Annotations {
                         curi = that.cur;
                     }
 
-                    TabixReader tabix = that.caddTabixes[curi];
+                    TabixReader tabix = that.tabixes[curi];
                     TabixReader.Iterator iter = tabix.query(query);
                     String caddScore = ".";
                     String caddGene = ".";
+                    String dannScore = ".";
+                    String gwavaScore = ".";
                     String type = "Coding";
                     String s;
                     while (iter != null && (s = iter.next()) != null) {
                         String[] results = s.split("\t");
                         if (results[2].equals(ref) && results[3].equals(alt)) {
-                            caddScore = results[7];
-                            if (!results[6].equals("NA")) {
-                                caddGene = results[6];
-                                if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
-                                    caddGene = that.ccdsGenes.get(caddGene);
-                                }
+                            caddScore = results[6];
+                            gwavaScore = results[7];
+                            dannScore = results[8];
+                            caddGene = results[5];
+                            if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
+                                caddGene = that.ccdsGenes.get(caddGene);
                             }
-
-                            if (!results[4].equals("CodingTranscript")) {
-                                type = "NonCoding";
-                            }
-
+                            type = results[4];
                             break;
                         }
-                    }
-
-                    tabix = that.dannTabixes[curi];
-                    iter = tabix.query(query);
-                    String dannScore = ".";
-                    while (iter != null && (s = iter.next()) != null) {
-                        String[] results = s.split("\t");
-                        if (results[2].equals(ref) && results[3].equals(alt)) {
-                            dannScore = results[4];
-                        }
-                    }
-
-                    tabix = that.gwavaTabixes[curi];
-                    iter = tabix.query("chr" + query);
-                    String gwavaScore = ".";
-                    if (iter != null && (s = iter.next()) != null) {
-                        String[] results = s.split("\t");
-                        double sum = 0;
-                        sum += Double.parseDouble(results[4]);
-                        sum += Double.parseDouble(results[5]);
-                        sum += Double.parseDouble(results[6]);
-                        sum /= 3;
-                        gwavaScore = Double.toString(sum);
                     }
 
                     that.busy[curi] = false;

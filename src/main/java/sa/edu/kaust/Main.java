@@ -2,7 +2,9 @@ import java.io.*;
 import java.util.*;
 import java.nio.*;
 import java.nio.file.*;
-import htsjdk.tribble.readers.TabixReader;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.JCommander;
+
 
 public class Main {
 
@@ -12,9 +14,24 @@ public class Main {
     Annotations annotations;
     Classification classification;
 
+    @Parameter(names={"--file", "-f"}, desciption="Path to VCF file")
+    String file = "";
+
+    @Parameter(names={"--phenotypes", "-p"}, desciption="List of phenotypes")
+    List<String> phenotypes = new ArrayList<String>();
+
+    @Parameter(names={"--omim", "-o"}, desciption="OMIM ID")
+    String omim = "";
+
+    @Parameter(names={"--imode", "-i"}, desciption="Mode of inheritance")
+    String mode = "unknown";
+
+    @Parameter(names={"--model", "-m"}, desciption="Prioritization model (Coding or Noncoding")
+    String model = "Coding";
+
+
     public Main() throws Exception {
         this.props = this.getProperties();
-        // this.phenoSim = new PhenoSim(this.props);
     }
 
     public Properties getProperties() throws Exception {
@@ -28,20 +45,40 @@ public class Main {
         return props;
     }
 
-    public void run(String[] args) throws Exception {
-        // Set<String> phenotypes = new HashSet<String>();
-        // phenotypes.add("HP:0000006");
-        // phenotypes.add("HP:0002664");
-        // phenotypes.add("HP:0012125");
-        // Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
+    public void run() throws Exception {
+        // this.runAnnotations(args);
+        // this.runClassifications(args);
+        // this.runPhenotypes(args);
+        // this.sort();
+        // this.merge();
+        this.runTool();
+    }
+
+    public void runTool() throws Exception {
+        this.phenoSim = new PhenoSim(this.props);
+        this.annotations = new Annotations(this.props);
+        this.classification = new Classification(this.props);
+        this.annotations.getAnnotations(this.file, this.mode);
+    }
+
+    public void runPhenotypes(String[] args) throws Exception {
+        this.phenoSim = new PhenoSim(this.props);
+
+        Set<String> phenotypes = new HashSet<String>();
+        phenotypes.add("HP:0001084");
+        phenotypes.add("HP:0003124");
+        phenotypes.add("HP:0001114");
+
+        Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
+        for (String gene: sims.keySet()) {
+            System.out.println(gene + "\t" + sims.get(gene));
+        }
         // Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
-        // System.out.println(sims.size());
         // System.out.println(topPhenos.size());
         // for (String pheno: topPhenos) {
         //     System.out.println(pheno);
         // }
-        // this.runAnnotations(args);
-        this.runClassifications(args);
+
     }
 
     public void runClassifications(String[] args) throws Exception {
@@ -99,7 +136,75 @@ public class Main {
         this.annotations.getAnnotations(root + files[id]);
     }
 
+    public void sort() throws Exception {
+        List<WGS> list = new ArrayList<WGS>();
+        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/db/wgs.txt"))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                String[] items = line.split("\t");
+                int chr = 0;
+                if (Character.isDigit(items[0].charAt(0))) {
+                    chr = Integer.parseInt(items[0]);
+                } else {
+                    chr = (int)items[0].charAt(0);
+                }
+                int pos = Integer.parseInt(items[1]);
+                list.add(new WGS(chr, pos, line));
+            }
+        }
+        Collections.sort(list);
+        PrintWriter out = new PrintWriter("data/db/db.txt");
+        for (WGS wgs: list) {
+            out.println(wgs.line);
+        }
+        out.close();
+    }
+
+    public void merge() throws Exception {
+        PrintWriter out = new PrintWriter("data/db/wes.txt");
+        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/db/wes.vcf"))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                String[] items = line.split("\t");
+                StringBuilder sb = new StringBuilder(items[0]);
+                for (int i = 1; i < 4; i++) {
+                    sb.append("\t");
+                    sb.append(items[i]);
+                }
+                sb.append("\t");
+                sb.append("Coding");
+                for (int i = 4; i < items.length; i++) {
+                    sb.append("\t");
+                    sb.append(items[i]);
+                }
+                out.println(sb.toString());
+            }
+        }
+        out.close();
+    }
+
+    class WGS implements Comparable<WGS> {
+        String line;
+        int chr;
+        int pos;
+
+        public WGS(int chr, int pos, String line) {
+            this.chr = chr;
+            this.pos = pos;
+            this.line = line;
+        }
+
+        public int compareTo(WGS o) {
+            int c = Integer.compare(this.chr, o.chr);
+            if (c == 0)
+                return Integer.compare(this.pos, o.pos);
+            return c;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        new Main().run(args);
+        Main main = new Main();
+        new JCommander(main, args);
+        main.run();
     }
 }

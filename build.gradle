@@ -16,6 +16,7 @@ dependencies {
     compile('net.sourceforge.owlapi:owlapi-parsers:4.1.4')
     compile('nz.ac.waikato.cms.weka:weka-stable:3.6.13')
     compile('org.codehaus.gpars:gpars:1.2.0')
+    compile('com.beust:jcommander:1.48')
 
     testCompile('junit:junit:4.12')
 }
