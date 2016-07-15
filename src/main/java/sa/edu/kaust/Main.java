@@ -4,29 +4,32 @@ import java.nio.*;
 import java.nio.file.*;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Main {
 
     public static final String PROJECT_PROPERTIES = "project.properties";
+    Logger log = Logger.getLogger(Main.class.getName());
     Properties props;
     PhenoSim phenoSim;
     Annotations annotations;
     Classification classification;
 
-    @Parameter(names={"--file", "-f"}, desciption="Path to VCF file")
+    @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String file = "";
 
-    @Parameter(names={"--phenotypes", "-p"}, desciption="List of phenotypes")
+    @Parameter(names={"--phenotypes", "-p"}, description="List of phenotypes")
     List<String> phenotypes = new ArrayList<String>();
 
-    @Parameter(names={"--omim", "-o"}, desciption="OMIM ID")
+    @Parameter(names={"--omim", "-o"}, description="OMIM ID")
     String omim = "";
 
-    @Parameter(names={"--imode", "-i"}, desciption="Mode of inheritance")
+    @Parameter(names={"--imode", "-i"}, description="Mode of inheritance")
     String mode = "unknown";
 
-    @Parameter(names={"--model", "-m"}, desciption="Prioritization model (Coding or Noncoding")
+    @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding")
     String model = "Coding";
 
 
@@ -58,6 +61,7 @@ public class Main {
         this.phenoSim = new PhenoSim(this.props);
         this.annotations = new Annotations(this.props);
         this.classification = new Classification(this.props);
+        log.info("Starting annotation");
         this.annotations.getAnnotations(this.file, this.mode);
     }
 
@@ -133,7 +137,7 @@ public class Main {
         if (!root.endsWith("/")) {
             root = root + "/";
         }
-        this.annotations.getAnnotations(root + files[id]);
+        this.annotations.getAnnotations(root + files[id], "unknown");
     }
 
     public void sort() throws Exception {
