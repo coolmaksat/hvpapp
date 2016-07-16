@@ -1,3 +1,5 @@
+package sa.edu.kaust;
+
 import java.io.*;
 import java.util.*;
 import java.nio.*;
@@ -6,6 +8,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sa.edu.kaust.exceptions.*;
 
 
 public class Main {
@@ -57,12 +60,39 @@ public class Main {
         this.runTool();
     }
 
-    public void runTool() throws Exception {
-        this.phenoSim = new PhenoSim(this.props);
-        this.annotations = new Annotations(this.props);
-        this.classification = new Classification(this.props);
-        log.info("Starting annotation");
-        this.annotations.getAnnotations(this.file, this.mode, this.model);
+    public boolean checkPhenotypeFormat(String pheno) {
+        return pheno.matches("HP:\\d{7}") || pheno.matches("MP:\\d{7}");
+    }
+
+    public void runTool() {
+        try {
+            for (String pheno: this.phenotypes) {
+                if (!this.checkPhenotypeFormat(pheno)) {
+                    throw new PhenotypeFormatException("Wrong phenotype format");
+                }
+            }
+
+            log.info("Initializing the model");
+            this.phenoSim = new PhenoSim(this.props);
+            this.annotations = new Annotations(this.props);
+            this.classification = new Classification(this.props);
+
+            log.info("Computing similarities");
+            Set<String> phenotypes = new HashSet<String>(this.phenotypes);
+            Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
+            log.info("Getting top level phenotypes");
+            Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
+            log.info("Starting annotation");
+            this.annotations.getAnnotations(
+                this.file, this.mode, this.model, sims);
+            this.classification.toArff(this.file, topPhenos, "0");
+            this.classification.toolClassify(this.file);
+
+        } catch(PhenotypeFormatException e) {
+            log.severe(e.getMessage());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void runPhenotypes(String[] args) throws Exception {
@@ -137,7 +167,7 @@ public class Main {
         if (!root.endsWith("/")) {
             root = root + "/";
         }
-        this.annotations.getAnnotations(root + files[id], this.mode, this.model);
+        // this.annotations.getAnnotations(root + files[id], this.mode, this.model);
     }
 
     public void sort() throws Exception {

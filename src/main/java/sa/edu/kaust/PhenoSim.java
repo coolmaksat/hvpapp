@@ -1,3 +1,5 @@
+package sa.edu.kaust;
+
 import java.util.*;
 import java.io.*;
 import java.nio.*;
@@ -104,17 +106,20 @@ public class PhenoSim {
         try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
             String line;
             while((line = br.readLine()) != null) {
-                String[] items = line.split("\t");
+                if (line.equals("")) {
+                    continue;
+                }
+                String[] items = line.split("\t", -1);
                 String phenotype = items[0];
                 if (!this.topPhenos.containsKey(phenotype)) {
                     this.topPhenos.put(phenotype, new HashSet<String>());
                 }
                 Set<String> phenoSet = this.topPhenos.get(phenotype);
-                String[] topPheno1 = items[1].substring(1, items[1].length() - 1).split(", ");
+                String[] topPheno1 = items[1].split(", ");
                 for (String pheno: topPheno1) {
                     phenoSet.add(pheno);
                 }
-                String[] topPheno2 = items[2].substring(1, items[2].length() - 1).split(", ");
+                String[] topPheno2 = items[2].split(", ");
                 for (String pheno: topPheno2) {
                     phenoSet.add(pheno);
                 }
@@ -140,7 +145,6 @@ public class PhenoSim {
                 geneIds = geneIds.substring(34, geneIds.length());
                 Double score = engine.compare(
                     smConfGroupwise, smConfPairwise, phenoURIs, set);
-                System.out.println(geneIds);
                 String[] geneId = geneIds.split("_");
                 for (String gId: geneId) {
                     if (!result.containsKey(gId)) {

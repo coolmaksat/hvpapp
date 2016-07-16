@@ -1,3 +1,5 @@
+package sa.edu.kaust;
+
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -16,6 +18,7 @@ public class Classification {
     public String modelName = "";
     public String arffFilesPath = "";
     RandomForest cls;
+    public String[] topLevelPhenotypes;
 
     public Classification(Properties props) throws Exception {
         // Loading the saved classifier
@@ -26,6 +29,47 @@ public class Classification {
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
         Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
+        this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
+    }
+
+    public void toolClassify(String fileName) throws Exception {
+        FileReader fr = new FileReader(fileName + ".arff");
+        Instances is = new Instances(fr);
+        is.setClassIndex(0);
+        Double[] results = new Double[is.numInstances()];
+        Classification that = this;
+        IntFunction<Double> clsfy = new IntFunction<Double>() {
+            @Override
+            public Double apply(int i) {
+                Instance instance = is.instance(i);
+                try {
+                    double[] result = that.cls.distributionForInstance(instance);
+                    return result[0];
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return 0.0;
+            }
+        };
+        Arrays.parallelSetAll(results, clsfy);
+        DataResult[] data = new DataResult[results.length];
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".out"))) {
+            String line;
+            int i = 0;
+            while((line = br.readLine()) != null) {
+                data[i] = new DataResult(line, results[i]);
+                ++i;
+            }
+            br.close();
+        }
+        Arrays.sort(data, Collections.reverseOrder());
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(
+            new FileWriter(fileName + ".res"), 104857600));
+        for (int i = 0; i < data.length; i++) {
+            out.println(data[i].s + "\t" + data[i].r);
+        }
+        out.close();
     }
 
     public void classifyFiles(int ind) throws Exception {
@@ -161,6 +205,52 @@ public class Classification {
 
     }
 
+    public void toArff(String fileName, Set<String> topPhenos, String inh) throws Exception {
+        PrintWriter out = new PrintWriter(new BufferedWriter(
+           new FileWriter(fileName + ".arff"), 104857600));
+        out.println("@relation " + fileName);
+        out.println();
+        out.println("@attribute TYPE {CASE,CTRL}");
+        for (String topPheno: this.topLevelPhenotypes) {
+            out.println("@attribute " + topPheno + " numeric");
+        }
+        out.println("@attribute inh numeric");
+        out.println("@attribute cadd numeric");
+        out.println("@attribute gwava numeric");
+        out.println("@attribute sim numeric");
+        out.println("@attribute dann numeric");
+        out.println("@attribute geno {1/1,0/1}");
+        out.println("");
+        out.println("@data");
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".out"))) {
+            boolean cs = true;
+            String line;
+            while((line = br.readLine()) != null) {
+                String[] items = line.split("\t", -1);
+                for(int i = 0; i < items.length; i++) {
+                   if (items[i].equals(".")) items[i] = "?";
+                }
+                out.print("CTRL");
+                for (String topPheno: this.topLevelPhenotypes) {
+                    if (topPhenos.contains(topPheno)) {
+                        out.print(",1");
+                    } else {
+                        out.print(",0");
+                    }
+                }
+                out.print("," + inh);
+                out.print("," + items[6]); // CADD
+                out.print("," + items[7]); // GWAVA
+                out.print("," + items[9]); // SIM
+                out.print("," + items[8]); // DANN
+                out.print("," + items[4]); // geno
+                out.println();
+            }
+            br.close();
+        }
+        out.close();
+    }
+
     public void toArff(String fileName) throws Exception {
         String dataRoot = this.dataRoot;
         String resultRoot = this.resultRoot;
@@ -169,60 +259,9 @@ public class Classification {
         out.println("@relation " + fileName);
         out.println();
         out.println("@attribute TYPE {CASE,CTRL}");
-        out.println("@attribute HP_0000078 numeric");
-        out.println("@attribute HP_0000291 numeric");
-        out.println("@attribute HP_0000708 numeric");
-        out.println("@attribute HP_0001001 numeric");
-        out.println("@attribute HP_0001939 numeric");
-        out.println("@attribute HP_0002086 numeric");
-        out.println("@attribute HP_0006476 numeric");
-        out.println("@attribute HP_0009126 numeric");
-        out.println("@attribute HP_0010515 numeric");
-        out.println("@attribute HP_0010948 numeric");
-        out.println("@attribute HP_0010987 numeric");
-        out.println("@attribute HP_0011017 numeric");
-        out.println("@attribute HP_0011025 numeric");
-        out.println("@attribute HP_0011277 numeric");
-        out.println("@attribute HP_0011482 numeric");
-        out.println("@attribute HP_0011915 numeric");
-        out.println("@attribute HP_0040063 numeric");
-        out.println("@attribute MP_0000003 numeric");
-        out.println("@attribute MP_0000358 numeric");
-        out.println("@attribute MP_0000428 numeric");
-        out.println("@attribute MP_0000462 numeric");
-        out.println("@attribute MP_0000516 numeric");
-        out.println("@attribute MP_0000685 numeric");
-        out.println("@attribute MP_0000716 numeric");
-        out.println("@attribute MP_0001188 numeric");
-        out.println("@attribute MP_0001213 numeric");
-        out.println("@attribute MP_0001270 numeric");
-        out.println("@attribute MP_0001533 numeric");
-        out.println("@attribute MP_0001663 numeric");
-        out.println("@attribute MP_0001672 numeric");
-        out.println("@attribute MP_0001764 numeric");
-        out.println("@attribute MP_0001790 numeric");
-        out.println("@attribute MP_0001983 numeric");
-        out.println("@attribute MP_0002060 numeric");
-        out.println("@attribute MP_0002089 numeric");
-        out.println("@attribute MP_0002095 numeric");
-        out.println("@attribute MP_0002106 numeric");
-        out.println("@attribute MP_0002109 numeric");
-        out.println("@attribute MP_0002138 numeric");
-        out.println("@attribute MP_0002139 numeric");
-        out.println("@attribute MP_0002163 numeric");
-        out.println("@attribute MP_0002164 numeric");
-        out.println("@attribute MP_0002396 numeric");
-        out.println("@attribute MP_0003385 numeric");
-        out.println("@attribute MP_0004133 numeric");
-        out.println("@attribute MP_0004134 numeric");
-        out.println("@attribute MP_0005408 numeric");
-        out.println("@attribute MP_0005451 numeric");
-        out.println("@attribute MP_0005621 numeric");
-        out.println("@attribute MP_0009389 numeric");
-        out.println("@attribute MP_0010678 numeric");
-        out.println("@attribute MP_0010769 numeric");
-        out.println("@attribute MP_0012719 numeric");
-        out.println("@attribute MP_0013328 numeric");
+        for (String topPheno: this.topLevelPhenotypes) {
+            out.println("@attribute " + topPheno + " numeric");
+        }
         // out.println("@attribute inh numeric");
         out.println("@attribute cadd numeric");
         out.println("@attribute gwava numeric");
@@ -335,6 +374,22 @@ public class Classification {
         @Override
         public int compareTo(Result r) {
             return Double.compare(this.d, r.d);
+        }
+    }
+
+    class DataResult implements Comparable<DataResult> {
+
+        String s;
+        double r;
+
+        public DataResult(String s, double r){
+            this.s = s;
+            this.r = r;
+        }
+
+        @Override
+        public int compareTo(DataResult dr) {
+            return Double.compare(this.r, dr.r);
         }
     }
 }

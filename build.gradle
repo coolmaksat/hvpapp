@@ -36,4 +36,4 @@ run {
     }
 }
 
-mainClassName = "Main"
+mainClassName = "sa.edu.kaust.Main"

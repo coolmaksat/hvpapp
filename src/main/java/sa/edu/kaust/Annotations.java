@@ -1,3 +1,5 @@
+package sa.edu.kaust;
+
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
@@ -25,6 +27,9 @@ public class Annotations {
         this.props = props;
         this.tabixN = 50;
         this.tabixes = new TabixReader[this.tabixN];
+        this.caddTabixes = new TabixReader[this.tabixN];
+        this.dannTabixes = new TabixReader[this.tabixN];
+        this.gwavaTabixes = new TabixReader[this.tabixN];
         this.busy = new boolean[this.tabixN];
         for (int i = 0; i < this.tabixN; i++) {
             this.tabixes[i] = new TabixReader(this.props.getProperty("dbPath"));
@@ -108,7 +113,7 @@ public class Annotations {
         }
     }
 
-    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, String model) throws Exception {
+    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, String model, Map<String, Double> sims) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(vcfFilePath + ".out"), 1073741824));
@@ -120,7 +125,7 @@ public class Annotations {
                     continue;
                 }
                 String[] items = line.split("\t");
-                String genotype = items[9].split(":")[0];
+                String genotype = items[9].split(":")[0].replaceAll("\\|", "\\/");
                 if (!(genotype.equals("0/1") || genotype.equals("1/1"))) {
                     continue;
                 }
@@ -215,7 +220,7 @@ public class Annotations {
                                 if (results[4].equals("CodingTranscript")) {
                                     type = "NonCoding";
                                 } else {
-                                    type = "Coding"
+                                    type = "Coding";
                                 }
                                 break;
                             }
@@ -246,9 +251,9 @@ public class Annotations {
                     that.busy[curi] = false;
                     String ret = String.format(
                         "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                        chr, pos, ref, alt, caddGene, caddScore,
-                        gwavaScore, dannScore, genotype);
-                    return ret + "::" + type;
+                        chr, pos, ref, alt, genotype, caddGene,
+                        caddScore, gwavaScore, dannScore);
+                    return ret + "::" + type + "::" + caddGene;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -259,7 +264,12 @@ public class Annotations {
         for (String res: data) {
             String[] r = res.split("::");
             if (r[1].equals(model)) {
-                out.println(r[0]);
+                String gene = r[2];
+                String simScore = ".";
+                if (sims.containsKey(gene)) {
+                    simScore = sims.get(gene).toString();
+                }
+                out.println(r[0] + "\t" + simScore);
             }
         }
         out.close();
