@@ -62,7 +62,7 @@ public class Main {
         this.annotations = new Annotations(this.props);
         this.classification = new Classification(this.props);
         log.info("Starting annotation");
-        this.annotations.getAnnotations(this.file, this.mode);
+        this.annotations.getAnnotations(this.file, this.mode, this.model);
     }
 
     public void runPhenotypes(String[] args) throws Exception {
@@ -137,7 +137,7 @@ public class Main {
         if (!root.endsWith("/")) {
             root = root + "/";
         }
-        this.annotations.getAnnotations(root + files[id], "unknown");
+        this.annotations.getAnnotations(root + files[id], this.mode, this.model);
     }
 
     public void sort() throws Exception {

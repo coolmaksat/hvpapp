@@ -16,6 +16,7 @@ public class Annotations {
     int tabixN;
     int cur = 0;
     TabixReader[] tabixes;
+    TabixReader[] caddTabixes;
     TabixReader[] dannTabixes;
     TabixReader[] gwavaTabixes;
     Map<String, String> ccdsGenes;
@@ -27,6 +28,9 @@ public class Annotations {
         this.busy = new boolean[this.tabixN];
         for (int i = 0; i < this.tabixN; i++) {
             this.tabixes[i] = new TabixReader(this.props.getProperty("dbPath"));
+            this.caddTabixes[i] = new TabixReader(this.props.getProperty("caddPath"));
+            this.dannTabixes[i] = new TabixReader(this.props.getProperty("dannPath"));
+            this.gwavaTabixes[i] = new TabixReader(this.props.getProperty("gwavaPath"));
         }
 
         this.ccdsGenes = new HashMap<String, String>();
@@ -104,7 +108,7 @@ public class Annotations {
         }
     }
 
-    public Map<String, Double> getAnnotations(String vcfFilePath, String mode) throws Exception {
+    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, String model) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(vcfFilePath + ".out"), 1073741824));
@@ -176,8 +180,9 @@ public class Annotations {
                     String caddGene = ".";
                     String dannScore = ".";
                     String gwavaScore = ".";
-                    String type = "Coding";
+                    String type = ".";
                     String s;
+                    boolean found = false;
                     while (iter != null && (s = iter.next()) != null) {
                         String[] results = s.split("\t");
                         if (results[2].equals(ref) && results[3].equals(alt)) {
@@ -189,19 +194,61 @@ public class Annotations {
                                 caddGene = that.ccdsGenes.get(caddGene);
                             }
                             type = results[4];
+                            found = true;
                             break;
+                        }
+                    }
+
+                    if (!found) {
+                        tabix = that.caddTabixes[curi];
+                        iter = tabix.query(query);
+                        while (iter != null && (s = iter.next()) != null) {
+                            String[] results = s.split("\t");
+                            if (results[2].equals(ref) && results[3].equals(alt)) {
+                                caddScore = results[7];
+                                if (!results[6].equals("NA")) {
+                                    caddGene = results[6];
+                                    if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
+                                        caddGene = that.ccdsGenes.get(caddGene);
+                                    }
+                                }
+                                if (results[4].equals("CodingTranscript")) {
+                                    type = "NonCoding";
+                                } else {
+                                    type = "Coding"
+                                }
+                                break;
+                            }
+                        }
+
+                        tabix = that.dannTabixes[curi];
+                        iter = tabix.query(query);
+                        while (iter != null && (s = iter.next()) != null) {
+                            String[] results = s.split("\t");
+                            if (results[2].equals(ref) && results[3].equals(alt)) {
+                                dannScore = results[4];
+                            }
+                        }
+
+                        tabix = that.gwavaTabixes[curi];
+                        iter = tabix.query("chr" + query);
+                        if (iter != null && (s = iter.next()) != null) {
+                            String[] results = s.split("\t");
+                            double sum = 0;
+                            sum += Double.parseDouble(results[4]);
+                            sum += Double.parseDouble(results[5]);
+                            sum += Double.parseDouble(results[6]);
+                            sum /= 3;
+                            gwavaScore = Double.toString(sum);
                         }
                     }
 
                     that.busy[curi] = false;
                     String ret = String.format(
-                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
-                        chr, pos, rsId, ref, alt, genotype,
-                        type, caddGene, caddScore,
-                        gwavaScore, dannScore);
-                    // String ret = String.format("%s\t%s\t%s",
-                    //     line, caddScore, dannScore);
-                    return ret;
+                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                        chr, pos, ref, alt, caddGene, caddScore,
+                        gwavaScore, dannScore, genotype);
+                    return ret + "::" + type;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -210,7 +257,10 @@ public class Annotations {
         };
         Arrays.parallelSetAll(data, annotation);
         for (String res: data) {
-            out.println(res);
+            String[] r = res.split("::");
+            if (r[1].equals(model)) {
+                out.println(r[0]);
+            }
         }
         out.close();
         return result;
