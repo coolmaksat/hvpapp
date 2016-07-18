@@ -20,9 +20,9 @@ public class Classification {
     RandomForest cls;
     public String[] topLevelPhenotypes;
 
-    public Classification(Properties props) throws Exception {
+    public Classification(Properties props, String model) throws Exception {
         // Loading the saved classifier
-        String rfModelFile = props.getProperty("randomForestModelFile");
+        String rfModelFile = props.getProperty("model" + model);
         this.dataRoot = props.getProperty("dataRoot");
         this.resultRoot = props.getProperty("resultRoot");
         this.arffFilesPath = props.getProperty("arffFiles");

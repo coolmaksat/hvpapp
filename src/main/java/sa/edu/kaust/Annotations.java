@@ -148,7 +148,7 @@ public class Annotations {
                     String rsId = items[2];
                     String ref = items[3];
                     String alt = items[4];
-                    String genotype = items[9].split(":")[0];
+                    String genotype = items[9].split(":")[0].replaceAll("\\|", "\\/");
                     // String ref = items[3];
                     // String alt = items[4];
 
@@ -207,31 +207,39 @@ public class Annotations {
                     if (!found) {
                         tabix = that.caddTabixes[curi];
                         iter = tabix.query(query);
+                        double maxScore = 0.0;
                         while (iter != null && (s = iter.next()) != null) {
-                            String[] results = s.split("\t");
+                            String[] results = s.split("\t", -1);
+                            if (caddGene.equals(".") && !results[6].equals("NA")) {
+                                caddGene = results[6];
+                                if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
+                                    caddGene = that.ccdsGenes.get(caddGene);
+                                }
+                            }
+                            if (results[4].equals("CodingTranscript")) {
+                                type = "NonCoding";
+                            } else {
+                                type = "Coding";
+                            }
                             if (results[2].equals(ref) && results[3].equals(alt)) {
                                 caddScore = results[7];
-                                if (!results[6].equals("NA")) {
-                                    caddGene = results[6];
-                                    if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
-                                        caddGene = that.ccdsGenes.get(caddGene);
-                                    }
-                                }
-                                if (results[4].equals("CodingTranscript")) {
-                                    type = "NonCoding";
-                                } else {
-                                    type = "Coding";
-                                }
                                 break;
+                            } else if (ref.length() != alt.length()) {
+                                maxScore = Math.max(maxScore, Double.parseDouble(results[7]));
+                                caddScore = Double.toString(maxScore);
                             }
                         }
 
                         tabix = that.dannTabixes[curi];
                         iter = tabix.query(query);
+                        maxScore = 0.0;
                         while (iter != null && (s = iter.next()) != null) {
                             String[] results = s.split("\t");
                             if (results[2].equals(ref) && results[3].equals(alt)) {
                                 dannScore = results[4];
+                            } else if (ref.length() != alt.length()) {
+                                maxScore = Math.max(maxScore, Double.parseDouble(results[4]));
+                                dannScore = Double.toString(maxScore);
                             }
                         }
 

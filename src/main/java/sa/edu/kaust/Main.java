@@ -6,6 +6,7 @@ import java.nio.*;
 import java.nio.file.*;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sa.edu.kaust.exceptions.*;
@@ -19,26 +20,69 @@ public class Main {
     PhenoSim phenoSim;
     Annotations annotations;
     Classification classification;
+    Map<String, String> inhModes;
+    Map<String, List<String> > disPhenos;
 
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String file = "";
 
-    @Parameter(names={"--phenotypes", "-p"}, description="List of phenotypes")
+    @Parameter(names={"--phenotype", "-p"}, description="List of phenotypes")
     List<String> phenotypes = new ArrayList<String>();
 
     @Parameter(names={"--omim", "-o"}, description="OMIM ID")
-    String omim = "";
+    String omimId = "";
 
-    @Parameter(names={"--imode", "-i"}, description="Mode of inheritance")
-    String mode = "unknown";
+    @Parameter(names={"--inh", "-i"}, description="Mode of inheritance")
+    String inh = "unknown";
 
-    @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding")
+    @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding)")
     String model = "Coding";
 
 
     public Main() throws Exception {
         this.props = this.getProperties();
+        this.loadInhModes();
+        this.loadDiseasePhenotypes();
     }
+
+    private void loadInhModes() throws Exception {
+        String fileName = this.props.getProperty("inhModesFile");
+        this.inhModes = new HashMap<String, String>();
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                if (line.equals("")) {
+                    continue;
+                }
+                String[] items = line.split("\t", -1);
+                String dis = items[0];
+                String inh = items[1];
+                this.inhModes.put(dis, inh);
+            }
+        }
+    }
+
+    private void loadDiseasePhenotypes() throws Exception {
+        String filename = this.props.getProperty("disPhenoFile");
+        this.disPhenos = new HashMap<String, List<String> >();
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                if (line.equals("")) {
+                    continue;
+                }
+                String[] items = line.split("\t", -1);
+                String dis = items[0];
+                if (!this.disPhenos.containsKey(dis)) {
+                    this.disPhenos.put(dis, new ArrayList<String>());
+                }
+                List<String> phenoSet = this.disPhenos.get(dis);
+                String pheno = items[1];
+                phenoSet.add(pheno);
+            }
+        }
+    }
+
 
     public Properties getProperties() throws Exception {
         if (this.props != null) {
@@ -60,22 +104,41 @@ public class Main {
         this.runTool();
     }
 
-    public boolean checkPhenotypeFormat(String pheno) {
-        return pheno.matches("HP:\\d{7}") || pheno.matches("MP:\\d{7}");
+    public void validateParameters() throws Exception {
+        if (!(this.model.equals("Coding") || this.model.equals("Noncoding"))) {
+            throw new Exception("Model should be Coding or Noncoding");
+        }
+        if (this.phenotypes.size() > 0) {
+            for (String pheno: this.phenotypes) {
+                if (!(pheno.matches("HP:\\d{7}") || pheno.matches("MP:\\d{7}"))) {
+                    throw new PhenotypeFormatException("Wrong phenotype format");
+                }
+            }
+        } else if (!this.omimId.equals("")){
+            if (!this.omimId.matches("OMIM:\\d{6}")) {
+                throw new Exception("Wrong OMIM ID format");
+            }
+            if (this.disPhenos.containsKey(this.omimId)) {
+                this.phenotypes = this.disPhenos.get(this.omimId);
+            } else {
+                throw new Exception("OMIM ID not found in our database");
+            }
+            if (this.inh.equals("unknown") && this.inhModes.containsKey(this.omimId)) {
+                this.inh = this.inhModes.get(this.omimId);
+            }
+        } else {
+            throw new Exception("Please provide phenotypes or OMIM ID");
+        }
+
     }
 
     public void runTool() {
         try {
-            for (String pheno: this.phenotypes) {
-                if (!this.checkPhenotypeFormat(pheno)) {
-                    throw new PhenotypeFormatException("Wrong phenotype format");
-                }
-            }
-
+            this.validateParameters();
             log.info("Initializing the model");
             this.phenoSim = new PhenoSim(this.props);
             this.annotations = new Annotations(this.props);
-            this.classification = new Classification(this.props);
+            this.classification = new Classification(this.props, this.model);
 
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
@@ -83,15 +146,23 @@ public class Main {
             log.info("Getting top level phenotypes");
             Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
             log.info("Starting annotation");
+            this.inh = this.inh.toLowerCase();
+            String mode = "3";
+            if (this.inh.equals("dominant")) {
+                mode = "0";
+            } else if (this.inh.equals("recessive")) {
+                mode = "1";
+            } else if (this.inh.equals("x-linked")) {
+                mode = "2";
+            }
             this.annotations.getAnnotations(
-                this.file, this.mode, this.model, sims);
-            this.classification.toArff(this.file, topPhenos, "0");
+                this.file, this.inh, this.model, sims);
+            this.classification.toArff(this.file, topPhenos, mode);
             this.classification.toolClassify(this.file);
-
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
         } catch(Exception e) {
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
     }
 
@@ -116,7 +187,7 @@ public class Main {
     }
 
     public void runClassifications(String[] args) throws Exception {
-        this.classification = new Classification(this.props);
+        this.classification = new Classification(this.props, this.model);
 
         if (args.length == 0) {
             throw new Exception("Please provide command name");
@@ -236,9 +307,20 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Main main = new Main();
-        new JCommander(main, args);
-        main.run();
+    public static void main(String[] args) {
+        JCommander jCommander = null;
+        Main main = null;
+        try {
+            main = new Main();
+            jCommander = new JCommander(main);
+            jCommander.setProgramName("HVPapp");
+            jCommander.parse(args);
+            main.run();
+        } catch (ParameterException e) {
+            System.err.println(e.getMessage());
+            jCommander.usage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
