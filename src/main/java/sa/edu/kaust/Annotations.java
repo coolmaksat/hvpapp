@@ -217,9 +217,9 @@ public class Annotations {
                                 }
                             }
                             if (results[4].equals("CodingTranscript")) {
-                                type = "NonCoding";
-                            } else {
                                 type = "Coding";
+                            } else {
+                                type = "NonCoding";
                             }
                             if (results[2].equals(ref) && results[3].equals(alt)) {
                                 caddScore = results[7];
