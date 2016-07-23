@@ -1,5 +1,7 @@
 # Introduction
 
+# Install instructions
+
 # How to analyze a VCF file?
 
 # Parameters
