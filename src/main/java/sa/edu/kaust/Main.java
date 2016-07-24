@@ -98,7 +98,7 @@ public class Main {
     public void run() throws Exception {
         // this.runAnnotations(args);
         // this.runClassifications(args);
-        // this.runPhenotypes(args);
+        // this.runPhenotypes();
         // this.sort();
         // this.merge();
         this.runTool();
@@ -166,23 +166,41 @@ public class Main {
         }
     }
 
-    public void runPhenotypes(String[] args) throws Exception {
+    public void runPhenotypes() throws Exception {
         this.phenoSim = new PhenoSim(this.props);
 
         Set<String> phenotypes = new HashSet<String>();
-        phenotypes.add("HP:0001084");
-        phenotypes.add("HP:0003124");
-        phenotypes.add("HP:0001114");
-
+        phenotypes.add("HP:0010662");
+        phenotypes.add("HP:0002930");
+        phenotypes.add("HP:0008227");
+        phenotypes.add("HP:0008247");
+        phenotypes.add("HP:0000836");
+        phenotypes.add("HP:0000818");
+        phenotypes.add("HP:0000853");
+        phenotypes.add("HP:0003828");
+        phenotypes.add("HP:0001962");
+        phenotypes.add("HP:0001649");
+        phenotypes.add("HP:0011784");
+        phenotypes.add("HP:0003812");
+        phenotypes.add("MP:0001255");
+        phenotypes.add("MP:0001253");
+        phenotypes.add("MP:0005605");
+        phenotypes.add("MP:0005422");
+        phenotypes.add("HP:0002750");
+        phenotypes.add("HP:0200000");
+        phenotypes.add("HP:0010514");
+        phenotypes.add("HP:0011344");
+        phenotypes.add("HP:0001263");
+        phenotypes.add("HP:0002342");
         Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
         for (String gene: sims.keySet()) {
             System.out.println(gene + "\t" + sims.get(gene));
         }
-        // Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
-        // System.out.println(topPhenos.size());
-        // for (String pheno: topPhenos) {
-        //     System.out.println(pheno);
-        // }
+        Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
+        System.out.println(topPhenos.size());
+        for (String pheno: topPhenos) {
+            System.out.println(pheno);
+        }
 
     }
 

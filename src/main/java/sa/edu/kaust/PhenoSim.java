@@ -138,6 +138,8 @@ public class PhenoSim {
             }
         }
         Map<String, Double> result = new HashMap<String, Double>();
+        double maxScore = Double.MIN_VALUE;
+        double minScore = Double.MAX_VALUE;
         for (URI gene: this.engine.getInstances()) {
             Set<URI> set = this.instanceAccessor.getDirectClass(gene);
             if (set != null && set.size() > 0) {
@@ -145,6 +147,8 @@ public class PhenoSim {
                 geneIds = geneIds.substring(34, geneIds.length());
                 Double score = engine.compare(
                     smConfGroupwise, smConfPairwise, phenoURIs, set);
+                maxScore = Math.max(maxScore, score);
+                minScore = Math.min(minScore, score);
                 String[] geneId = geneIds.split("_");
                 for (String gId: geneId) {
                     if (!result.containsKey(gId)) {
@@ -155,6 +159,11 @@ public class PhenoSim {
                     }
                 }
             }
+        }
+        // Min-Max Normalization
+        for (String gene: result.keySet()) {
+            double score = result.get(gene);
+            result.put(gene, (score - minScore) / (maxScore - minScore));
         }
         return result;
     }
