@@ -2,6 +2,12 @@
 
 # Install instructions
 
+To install, run
+`git clone https://github.com/bio-ontology-research-group/phenomenet-vp/`
+to check out the source code. Then run
+`sh runall.sh`
+and the application will be compiled for your platform.
+
 # How to analyze a VCF file?
 
 # Parameters
