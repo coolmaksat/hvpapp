@@ -22,6 +22,7 @@ public class Annotations {
     TabixReader[] dannTabixes;
     TabixReader[] gwavaTabixes;
     Map<String, String> ccdsGenes;
+    boolean all = false;
 
     public Annotations(Properties props) throws Exception {
         this.props = props;
@@ -48,6 +49,11 @@ public class Annotations {
         }
 
 
+    }
+
+    public Annotations(Properties props, boolean all) throws Exception {
+        this(props);
+        this.all = all;
     }
 
 
@@ -271,14 +277,15 @@ public class Annotations {
         Arrays.parallelSetAll(data, annotation);
         for (String res: data) {
             String[] r = res.split("::");
-            if (r[1].equals(model)) {
-                String gene = r[2];
-                String simScore = ".";
-                if (sims.containsKey(gene)) {
-                    simScore = sims.get(gene).toString();
-                }
-                out.println(r[0] + "\t" + simScore);
+            if (!this.all && !r[1].equals(model)) {
+                continue;
             }
+            String gene = r[2];
+            String simScore = ".";
+            if (sims.containsKey(gene)) {
+                simScore = sims.get(gene).toString();
+            }
+            out.println(r[0] + "\t" + simScore);
         }
         out.close();
         return result;

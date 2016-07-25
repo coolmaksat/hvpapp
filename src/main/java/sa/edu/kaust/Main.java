@@ -40,6 +40,9 @@ public class Main {
     @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding)")
     String model = "Coding";
 
+    @Parameter(names={"--all", "-a"}, description="Do not filter variants by coding or noncoding annotations")
+    boolean all = false;
+
 
     public Main() throws Exception {
         this.props = this.getProperties();
@@ -140,8 +143,11 @@ public class Main {
             this.loadInhModes();
             this.loadDiseasePhenotypes();
             this.validateParameters();
+            for (String pheno: this.phenotypes) {
+                System.out.println(pheno);
+            }
             this.phenoSim = new PhenoSim(this.props);
-            this.annotations = new Annotations(this.props);
+            this.annotations = new Annotations(this.props, this.all);
             this.classification = new Classification(this.props, this.model);
 
             log.info("Computing similarities");
