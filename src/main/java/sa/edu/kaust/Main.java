@@ -136,10 +136,10 @@ public class Main {
 
     public void runTool() {
         try {
-            this.validateParameters();
             log.info("Initializing the model");
             this.loadInhModes();
             this.loadDiseasePhenotypes();
+            this.validateParameters();
             this.phenoSim = new PhenoSim(this.props);
             this.annotations = new Annotations(this.props);
             this.classification = new Classification(this.props, this.model);
