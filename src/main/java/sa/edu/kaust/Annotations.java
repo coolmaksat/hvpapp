@@ -126,10 +126,10 @@ public class Annotations {
                 }
                 String[] items = line.split("\t");
                 String genotype = items[9].split(":")[0].replaceAll("\\|", "\\/");
-                if (!(genotype.equals("0/1") || genotype.equals("1/1"))) {
+                if (!(genotype.equals("1/0") || genotype.equals("0/1") || genotype.equals("1/1"))) {
                     continue;
                 }
-                if (mode.equals("recessive") && genotype.equals("0/1")) {
+                if (mode.equals("recessive") && (genotype.equals("0/1") || genotype.equals("1/0"))) {
                     continue;
                 }
                 dataList.add(line);

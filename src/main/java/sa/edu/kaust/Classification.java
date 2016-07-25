@@ -244,6 +244,9 @@ public class Classification {
                 out.print("," + items[7]); // GWAVA
                 out.print("," + items[9]); // SIM
                 out.print("," + items[8]); // DANN
+                if (items[4].equals("1/0")) {
+                    items[4] = "0/1";
+                }
                 out.print("," + items[4]); // geno
                 out.println();
             }
