@@ -66,6 +66,7 @@ public class Classification {
 
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(fileName + ".res"), 104857600));
+        out.println("Chr\tStart\tRef\tAlt\tGT\tGene\tCADD\tGWAVA\tDANN\tSim_Score\tPrediction_Score");
         for (int i = 0; i < data.length; i++) {
             out.println(data[i].s + "\t" + data[i].r);
         }

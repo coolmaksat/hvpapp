@@ -26,7 +26,9 @@ public class Main {
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String file = "";
 
-    @Parameter(names={"--phenotype", "-p"}, description="List of phenotypes")
+    @Parameter(names={"--phenotypes", "-p"}, description="List of phenotype ids separated by commas")
+    String phenos = "";
+
     List<String> phenotypes = new ArrayList<String>();
 
     @Parameter(names={"--omim", "-o"}, description="OMIM ID")
@@ -41,8 +43,6 @@ public class Main {
 
     public Main() throws Exception {
         this.props = this.getProperties();
-        this.loadInhModes();
-        this.loadDiseasePhenotypes();
     }
 
     private void loadInhModes() throws Exception {
@@ -108,15 +108,17 @@ public class Main {
         if (!(this.model.equals("Coding") || this.model.equals("Noncoding"))) {
             throw new Exception("Model should be Coding or Noncoding");
         }
-        if (this.phenotypes.size() > 0) {
-            for (String pheno: this.phenotypes) {
+        if (!this.phenos.equals("")) {
+            for (String pheno: this.phenos.split(",")) {
+                pheno = pheno.trim();
                 if (!(pheno.matches("HP:\\d{7}") || pheno.matches("MP:\\d{7}"))) {
-                    throw new PhenotypeFormatException("Wrong phenotype format");
+                    throw new PhenotypeFormatException("Wrong phenotype format. Should be HP:XXXXXXX or MP:XXXXXXX");
                 }
+                this.phenotypes.add(pheno);
             }
         } else if (!this.omimId.equals("")){
             if (!this.omimId.matches("OMIM:\\d{6}")) {
-                throw new Exception("Wrong OMIM ID format");
+                throw new Exception("Wrong OMIM ID format. Should be OMIM:XXXXXX");
             }
             if (this.disPhenos.containsKey(this.omimId)) {
                 this.phenotypes = this.disPhenos.get(this.omimId);
@@ -136,6 +138,8 @@ public class Main {
         try {
             this.validateParameters();
             log.info("Initializing the model");
+            this.loadInhModes();
+            this.loadDiseasePhenotypes();
             this.phenoSim = new PhenoSim(this.props);
             this.annotations = new Annotations(this.props);
             this.classification = new Classification(this.props, this.model);
