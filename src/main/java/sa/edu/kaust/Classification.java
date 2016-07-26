@@ -28,7 +28,7 @@ public class Classification {
         this.arffFilesPath = props.getProperty("arffFiles");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
-        Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
+        // Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
 

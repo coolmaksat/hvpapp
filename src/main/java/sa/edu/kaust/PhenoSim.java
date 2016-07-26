@@ -41,6 +41,7 @@ public class PhenoSim {
     public PhenoSim(Properties props) throws Exception {
         this.props = props;
         System.setProperty("jdk.xml.entityExpansionLimit", "0");
+        System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
         this.initEngine();
         this.loadTopLevelPhenotypes();
     }
