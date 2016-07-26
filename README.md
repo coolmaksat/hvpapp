@@ -51,13 +51,13 @@ To run the tool, the user needs to provide a VCF file along with either an OMIM 
 
 a) Prioritize disease-causing variants using OMIM ID and coding model and keeping all variants:
 
-   bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600 -m Coding -a
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600 -m Coding -a
 
 b) a) Prioritize disease-causing variants using a set of phenotypes, and parameters: coding model, and dominant inheritence mode, and filter noncoding variants from the result file
 
-   bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000174,HP:0000194,HP:0000218,HP:0000238,HP:0000244,HP:0000272,HP:0000303,HP:0000316,HP:0000322,HP:0000324,HP:0000327,HP:0000348,HP:0000431,HP:0000452,HP:0000453,HP:0000470,HP:0000486,HP:0000494,HP:0000508,HP:0000586,HP:0000678,HP:0001156,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003272,HP:0003307,HP:0003795,HP:0004209,HP:0004322,HP:0004440,HP:0005048,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0009602,HP:0009773,HP:0010055,HP:0010669,HP:0011304 -m Coding -i dominant 
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000174,HP:0000194,HP:0000218,HP:0000238,HP:0000244,HP:0000272,HP:0000303,HP:0000316,HP:0000322,HP:0000324,HP:0000327,HP:0000348,HP:0000431,HP:0000452,HP:0000453,HP:0000470,HP:0000486,HP:0000494,HP:0000508,HP:0000586,HP:0000678,HP:0001156,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003272,HP:0003307,HP:0003795,HP:0004209,HP:0004322,HP:0004440,HP:0005048,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0009602,HP:0009773,HP:0010055,HP:0010669,HP:0011304 -m Coding -i dominant 
    
-   The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension
+   The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
    
 
 # Contact
