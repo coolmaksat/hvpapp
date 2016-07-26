@@ -1,4 +1,10 @@
-# Introduction
+# phenomenet-vp: A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data: Command Line Executable
+
+## Software and Hardware requirements
+ - At least X GB RAM.
+ - Any Unix-based operating system
+ - Java 8 or above
+ - At least 170GB free disk space to accomodate the necessery datatbases for annotation
 
 # Install instructions
 
