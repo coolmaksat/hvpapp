@@ -22,7 +22,7 @@
 
 ## Database requirements 
   1. Download CADD database from: 
-   http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz
+   http://cadd.gs.washington.edu/download
   2. Unzip whole_genome_SNVs_inclAnno.tsv.gz
   3. Run the script generate.sh provided at (Require TABIX installation:
   Link here XXXXX
