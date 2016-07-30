@@ -24,8 +24,8 @@
   1. Download CADD database from: 
    http://cadd.gs.washington.edu/download
   2. Unzip whole_genome_SNVs_inclAnno.tsv.gz
-  3. Run the script generate.sh provided at (Requires TABIX installation:
-  Link here http://www.htslib.org/doc/tabix.html
+  3. Run the script generate.sh provided at (Requires TABIX:
+     http://www.htslib.org/doc/tabix.html
   4. Copy the generated files cadd.txt.gz and cadd.txt.gz.tbi to directory phenomenet-vp-1.0/data/db
   5. Downlaod he following two DANN database files to  directory phenomenet-vp-1.0/data/db
      https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz
