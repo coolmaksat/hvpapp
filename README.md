@@ -12,9 +12,9 @@
  1. Download the distribution file (phenomenet-vp-1.0.zip)
  from https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip
  2. Download the data files (phenomenet-vp-1.0-data.zip)
- from XXX
+ from http://www.cbrc.kaust.edu.sa/onto/pvp/data.tar.gz
  3. Extract the distribution files (phenomenet-vp-1.0.zip)
- 4. Extract the data files inside the directory phenomenet-vp-1.0
+ 4. Extract the data files (data.tar.gz) inside the directory phenomenet-vp-1.0
  5. cd phenomenet-vp-1.0
  6. Run the following command: 
     bin/phenomenet-vp
@@ -64,6 +64,9 @@ b) a) Prioritize disease-causing variants using a set of phenotypes, and paramet
    
    The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
    
+# Synthetic Exomes
+
+
 
 # Contact
 
