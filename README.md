@@ -65,7 +65,9 @@ b) a) Prioritize disease-causing variants using a set of phenotypes, and paramet
    The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
    
 # Synthetic Exomes
-
+Our prepared set of synthetic exome are available at:
+http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/
+The above directory contains VCF-format synthetic exomes. The file clinvar_variants.txt contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in clinvar_variants.txt is used to create var_i.vcf synthetic exome. The subdirectory (wo_maf) contains unfiltered VCF files while (with_maf/) contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
 
 # Contact
