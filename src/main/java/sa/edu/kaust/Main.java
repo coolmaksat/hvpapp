@@ -126,13 +126,13 @@ public class Main {
             if (this.disPhenos.containsKey(this.omimId)) {
                 this.phenotypes = this.disPhenos.get(this.omimId);
             } else {
-                throw new Exception("OMIM ID not found in our database");
+                // throw new Exception("OMIM ID not found in our database");
             }
             if (this.inh.equals("unknown") && this.inhModes.containsKey(this.omimId)) {
                 this.inh = this.inhModes.get(this.omimId);
             }
         } else {
-            throw new Exception("Please provide phenotypes or OMIM ID");
+            // throw new Exception("Please provide phenotypes or OMIM ID");
         }
 
     }

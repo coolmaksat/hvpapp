@@ -146,8 +146,11 @@ public class PhenoSim {
             if (set != null && set.size() > 0) {
                 String geneIds = URLDecoder.decode(gene.toString());
                 geneIds = geneIds.substring(34, geneIds.length());
-                Double score = engine.compare(
-                    smConfGroupwise, smConfPairwise, phenoURIs, set);
+                Double score = 0.0;
+                if (phenoURIs.size() > 0) {
+                    score = engine.compare(
+                        smConfGroupwise, smConfPairwise, phenoURIs, set);
+                }
                 maxScore = Math.max(maxScore, score);
                 minScore = Math.min(minScore, score);
                 String[] geneId = geneIds.split("_");
