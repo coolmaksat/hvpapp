@@ -1,16 +1,74 @@
-# Introduction
+# phenomenet-vp: A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data: Command Line Executable
 
-# Install instructions
+## Software and Hardware requirements
+ - At least 32 GB RAM.
+ - Any Unix-based operating system
+ - Java 8 or above
+ - At least 170GB free disk space to accomodate the necessery datatbases for annotation
 
-To install, run
-`git clone https://github.com/bio-ontology-research-group/phenomenet-vp/`
-to check out the source code. Then run
-`sh runall.sh`
-and the application will be compiled for your platform.
+ 
+## Installation 
+    
+ 1. Download the distribution file (phenomenet-vp-1.0.zip)
+ from https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip
+ 2. Download the data files (phenomenet-vp-1.0-data.zip)
+ from http://www.cbrc.kaust.edu.sa/onto/pvp/data.tar.gz
+ 3. Extract the distribution files (phenomenet-vp-1.0.zip)
+ 4. Extract the data files (data.tar.gz) inside the directory phenomenet-vp-1.0
+ 5. cd phenomenet-vp-1.0
+ 6. Run the following command: 
+    bin/phenomenet-vp
+	to display help and parameters.
 
-# How to analyze a VCF file?
+## Database requirements 
+  1. Download the following CADD database file : 
+   http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz
+  2. Unzip whole_genome_SNVs_inclAnno.tsv.gz
+  3. Download and run the script generate.sh provided at: http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh (Requires TABIX:
+     http://www.htslib.org/doc/tabix.html
+  4. Copy the generated files cadd.txt.gz and cadd.txt.gz.tbi to directory phenomenet-vp-1.0/data/db
+  5. Download he following two DANN database files to  directory phenomenet-vp-1.0/data/db
+     https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz
+     https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi
+  6. Rename the above two files as dann.txt.gz and dann.txt.gz.tbi respectively. 
+  
 
-# Parameters
+## Parameters
+    --file, -f
+       Path to VCF file
+    --inh, -i
+       Mode of inheritance (dominant, recessive, x-linked, others, or unknown)
+       Default: unknown
+    --model, -m
+       Prioritization model to be used (Coding or Noncoding)
+       Default: Coding
+    --omim, -o
+       OMIM ID of the input VCF file
+    --phenotypes, -p
+       List of phenotype ids separated by commas (HPO or MPO terms)
+    --all, -a
+       Keep all variants for analysis (i.e. Do not filter variants based on their annotation type as coding variants or noncoding variants)
+       Default: false
+
+## Usage:
+
+To run the tool, the user needs to provide a VCF file along with either an OMIM ID of the disease or a list of phenotypes (HPO or MPO terms).
+
+a) Prioritize disease-causing variants using OMIM ID and coding model and keeping all variants:
+
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600 -m Coding -a
+
+b) a) Prioritize disease-causing variants using a set of phenotypes, and parameters: coding model, and dominant inheritence mode, and filter noncoding variants from the result file
+
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000174,HP:0000194,HP:0000218,HP:0000238,HP:0000244,HP:0000272,HP:0000303,HP:0000316,HP:0000322,HP:0000324,HP:0000327,HP:0000348,HP:0000431,HP:0000452,HP:0000453,HP:0000470,HP:0000486,HP:0000494,HP:0000508,HP:0000586,HP:0000678,HP:0001156,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003272,HP:0003307,HP:0003795,HP:0004209,HP:0004322,HP:0004440,HP:0005048,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0009602,HP:0009773,HP:0010055,HP:0010669,HP:0011304 -m Coding -i dominant 
+   
+   The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
+   
+# Synthetic Exomes
+Our prepared set of synthetic exome are available at:
+http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/
+The above directory contains VCF-format synthetic exomes. The file clinvar_variants.txt contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in clinvar_variants.txt is used to create var_i.vcf synthetic exome. The subdirectory (wo_maf) contains unfiltered VCF files while (with_maf/) contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+
 
 # Contact
 
