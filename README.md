@@ -17,11 +17,11 @@
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
-  1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file : 
+  1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file.
   2. Unzip `whole_genome_SNVs_inclAnno.tsv.gz`
-  3. Download and run the script [generate.sh](http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html))
-  4. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`
-  5. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`
+  3. Download and run the script [generate.sh](http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html)).
+  4. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`.
+  5. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`.
   6. Rename the above two files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
   
 
@@ -60,7 +60,7 @@ b) Prioritize disease-causing variants using a set of phenotypes, and parameters
 
 In order to effectively analysis rare variants, it is strongly recommended to *filter the input VCF files by MAF* prior to running phenomenet-vp on it. To do so, follow the instructions below:
 
-a) Install [VCFtools](https://vcftools.github.io/index.html)
+a) Install [VCFtools](https://vcftools.github.io/index.html).
 
 b) Run the following command using VCFtools on your input VCF file *to filter out variants with MAF > 1%*:
 
