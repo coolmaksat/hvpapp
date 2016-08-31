@@ -64,7 +64,17 @@ b) a) Prioritize disease-causing variants using a set of phenotypes, and paramet
    
    The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
    
+# Analysis of Rare Variants:
+
+In order to effectively analysis rare variants, it is strongly recommended to filter the input VCF files by MAF before running phenomenet-vp on it. To do so, follow the instructions below:
+
+ 1. Install VCFtools (https://vcftools.github.io/index.html)
+ 2. Run the following command using VCFtools on your input VCF files (to filter VCF file by MAF < 1%)
+ 	vcftools --vcf input_file.vcf --recode --max-maf 0.01 --out filtered
+ 1. Run phenomenet-vp on the output file (filtered.recode.vcf) generated from the command above.
+
 # Synthetic Exomes
+
 Our prepared set of synthetic exome are available at:
 http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/
 The above directory contains VCF-format synthetic exomes. The file clinvar_variants.txt contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in clinvar_variants.txt is used to create var_i.vcf synthetic exome. The subdirectory (wo_maf) contains unfiltered VCF files while (with_maf/) contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
