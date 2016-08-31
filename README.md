@@ -9,28 +9,20 @@
  
 ## Installation 
     
- 1. Download the distribution file (phenomenet-vp-1.0.zip)
- from https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip
- 2. Download the data files (phenomenet-vp-1.0-data.zip)
- from http://www.cbrc.kaust.edu.sa/onto/pvp/data.tar.gz
- 3. Extract the distribution files (phenomenet-vp-1.0.zip)
- 4. Extract the data files (data.tar.gz) inside the directory phenomenet-vp-1.0
- 5. cd phenomenet-vp-1.0
- 6. Run the following command: 
-    bin/phenomenet-vp
-	to display help and parameters.
+ 1. Download the distribution file [phenomenet-vp-1.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip)
+ 2. Download the data files [phenomenet-vp-1.0-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-1.0.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.0
+ 5. cd `phenomenet-vp-1.0 `
+ 6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
-  1. Download the following CADD database file : 
-   http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz
-  2. Unzip whole_genome_SNVs_inclAnno.tsv.gz
-  3. Download and run the script generate.sh provided at: http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh (Requires TABIX:
-     http://www.htslib.org/doc/tabix.html
-  4. Copy the generated files cadd.txt.gz and cadd.txt.gz.tbi to directory phenomenet-vp-1.0/data/db
-  5. Download he following two DANN database files to  directory phenomenet-vp-1.0/data/db
-     https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz
-     https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi
-  6. Rename the above two files as dann.txt.gz and dann.txt.gz.tbi respectively. 
+  1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file : 
+  2. Unzip `whole_genome_SNVs_inclAnno.tsv.gz`
+  3. Download and run the script [generate.sh](http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html))
+  4. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`
+  5. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`
+  6. Rename the above two files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
   
 
 ## Parameters
@@ -52,9 +44,9 @@
 
 ## Usage:
 
-To run the tool, the user needs to provide a VCF file along with either an OMIM ID of the disease or a list of phenotypes (HPO or MPO terms).
+To run the tool, the user needs to provide a **VCF file** along with either an **OMIM ID** of the disease or a **list of phenotypes (HPO or MPO terms)**.
 
-a) Prioritize disease-causing variants using OMIM ID and coding model and keeping all variants:
+a) Prioritize disease-causing variants using OMIM ID and coding model while keeping all variants:
 
 	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600 -m Coding -a
 	
@@ -66,21 +58,19 @@ b) Prioritize disease-causing variants using a set of phenotypes, and parameters
    
 # Analysis of Rare Variants:
 
-In order to effectively analysis rare variants, it is strongly recommended to filter the input VCF files by MAF before running phenomenet-vp on it. To do so, follow the instructions below:
+In order to effectively analysis rare variants, it is strongly recommended to *filter the input VCF files by MAF* prior to running phenomenet-vp on it. To do so, follow the instructions below:
 
-a) Install VCFtools (https://vcftools.github.io/index.html)
+a) Install [VCFtools](https://vcftools.github.io/index.html)
 
-b) Run the following command using VCFtools on your input VCF file (to filter VCF file by MAF < 1%):
+b) Run the following command using VCFtools on your input VCF file *to filter out variants with MAF > 1%*:
 
 	vcftools --vcf input_file.vcf --recode --max-maf 0.01 --out filtered
 	
-c) Run phenomenet-vp on the output file (filtered.recode.vcf) generated from the command above.
+c) Run **phenomenet-vp** on the output file *filtered.recode.vcf* generated from the command above.
  
 # Synthetic Exomes
 
-Our prepared set of synthetic exome are available at:
-http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/
-The above directory contains VCF-format synthetic exomes. The file clinvar_variants.txt contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in clinvar_variants.txt is used to create var_i.vcf synthetic exome. The subdirectory (wo_maf) contains unfiltered VCF files while (with_maf/) contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+Our prepared set of synthetic exome are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
 
 # Contact
