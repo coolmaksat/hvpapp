@@ -69,8 +69,10 @@ b) a) Prioritize disease-causing variants using a set of phenotypes, and paramet
 In order to effectively analysis rare variants, it is strongly recommended to filter the input VCF files by MAF before running phenomenet-vp on it. To do so, follow the instructions below:
 
  1. Install VCFtools (https://vcftools.github.io/index.html)
- 2. Run the following command using VCFtools on your input VCF files (to filter VCF file by MAF < 1%)
- 	vcftools --vcf input_file.vcf --recode --max-maf 0.01 --out filtered
+ 2. Run the following command using VCFtools on your input VCF files (to filter VCF file by MAF < 1%):
+ 
+	vcftools --vcf input_file.vcf --recode --max-maf 0.01 --out filtered
+
  1. Run phenomenet-vp on the output file (filtered.recode.vcf) generated from the command above.
 
 # Synthetic Exomes
