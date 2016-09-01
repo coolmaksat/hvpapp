@@ -4,7 +4,7 @@
  - At least 32 GB RAM.
  - Any Unix-based operating system
  - Java 8 or above
- - At least 170GB free disk space to accomodate the necessery datatbases for annotation
+ - At least 170GB free disk space to accommodate the necessary databases for annotation
 
  
 ## Installation 
