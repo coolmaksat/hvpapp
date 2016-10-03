@@ -9,10 +9,10 @@
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-1.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip)
- 2. Download the data files [phenomenet-vp-1.0-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data.tar.gz)
+ 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip)
+ 2. Download the data files [phenomenet-vp-1.1-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.1.tar.gz)
  3. Extract the distribution files `phenomenet-vp-1.0.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.0
+ 4. Extract the data files `data-v1.1.tar.gz` inside the directory phenomenet-vp-1.0
  5. cd `phenomenet-vp-1.0 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
@@ -38,6 +38,9 @@
        OMIM ID of the input VCF file
     --phenotypes, -p
        List of phenotype ids separated by commas (HPO or MPO terms)
+    --human, -h
+       Do not propagate human disease phenotypes to genes
+       Default: false
     --all, -a
        Keep all variants for analysis (i.e. Do not filter variants based on their annotation type as coding variants or noncoding variants)
        Default: false
