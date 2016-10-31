@@ -70,8 +70,13 @@ c) Run **phenomenet-vp** on the output file *filtered.recode.vcf* generated from
  
 # Synthetic Exomes
 
-Our prepared set of synthetic exome are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/synthetic_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+Our prepared set of synthetic exomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
+# Synthetic Genomes
+
+Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+
+## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP version 1.0.
 
 # Contact
 
