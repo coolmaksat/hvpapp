@@ -33,13 +33,16 @@ public class PhenoSim {
     InstancesAccessor instanceAccessor;
     SMconf smConfPairwise;
     SMconf smConfGroupwise;
-
+    boolean h;
+    boolean mod;
     Properties props;
     Map<String, Set<String> > topPhenos;
 
 
-    public PhenoSim(Properties props) throws Exception {
+    public PhenoSim(Properties props, boolean human, boolean model) throws Exception {
         this.props = props;
+        this.h = human;
+        this.mod = model;
         System.setProperty("jdk.xml.entityExpansionLimit", "0");
         System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
         this.initEngine();
@@ -70,8 +73,13 @@ public class PhenoSim {
         //GraphActionExecutor.applyAction(factory, rooting, graph);
 
         //println graph.getE()
-
-        String modelPhenoFile = this.props.getProperty("modelPhenoFile");
+        String modelPhenoFile;
+        if (this.h)
+            modelPhenoFile = this.props.getProperty("modelPhenoFile_human");
+        else if (this.mod)
+            modelPhenoFile = this.props.getProperty("modelPhenoFile_mod");
+        else
+            modelPhenoFile = this.props.getProperty("modelPhenoFile");
         try(BufferedReader br = Files.newBufferedReader(Paths.get(modelPhenoFile))) {
             String line;
             while((line = br.readLine()) != null) {

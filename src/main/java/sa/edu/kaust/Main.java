@@ -40,6 +40,12 @@ public class Main {
     @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding)")
     String model = "Coding";
 
+    @Parameter(names={"--human", "-h"}, description="Propagate human disease phenotypes to genes only")
+    boolean human = false;
+
+    @Parameter(names={"--sp", "-s"}, description="Propagate mouse and fish disease phenotypes to genes only")
+    boolean mod = false;
+
     @Parameter(names={"--all", "-a"}, description="Do not filter variants by coding or noncoding annotations")
     boolean all = false;
 
@@ -146,9 +152,9 @@ public class Main {
             for (String pheno: this.phenotypes) {
                 System.out.println(pheno);
             }
-            this.phenoSim = new PhenoSim(this.props);
+            this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
             this.annotations = new Annotations(this.props, this.all);
-            this.classification = new Classification(this.props, this.model);
+            this.classification = new Classification(this.props, this.model, this.human, this.mod);
 
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
@@ -177,7 +183,7 @@ public class Main {
     }
 
     public void runPhenotypes() throws Exception {
-        this.phenoSim = new PhenoSim(this.props);
+        this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
 
         Set<String> phenotypes = new HashSet<String>();
         phenotypes.add("HP:0010662");
@@ -215,7 +221,7 @@ public class Main {
     }
 
     public void runClassifications(String[] args) throws Exception {
-        this.classification = new Classification(this.props, this.model);
+        this.classification = new Classification(this.props, this.model, this.human, this.mod);
 
         if (args.length == 0) {
             throw new Exception("Please provide command name");

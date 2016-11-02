@@ -20,17 +20,24 @@ public class Classification {
     RandomForest cls;
     public String[] topLevelPhenotypes;
 
-    public Classification(Properties props, String model) throws Exception {
+    public Classification(Properties props, String model, boolean human, boolean mod) throws Exception {
         // Loading the saved classifier
-        String rfModelFile = props.getProperty("model" + model);
-        this.dataRoot = props.getProperty("dataRoot");
-        this.resultRoot = props.getProperty("resultRoot");
-        this.arffFilesPath = props.getProperty("arffFiles");
+        String rfModelFile;
+        if (human)
+           rfModelFile = props.getProperty("model" + model + "_human");
+        else if (mod)
+           rfModelFile = props.getProperty("model" + model + "_mod");
+        else
+           rfModelFile = props.getProperty("model" + model);
+        //this.dataRoot = props.getProperty("dataRoot");
+        //this.resultRoot = props.getProperty("resultRoot");
+        //this.arffFilesPath = props.getProperty("arffFiles");
         this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
         this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
         // Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
+    
 
     public void toolClassify(String fileName) throws Exception {
         FileReader fr = new FileReader(fileName + ".arff");
