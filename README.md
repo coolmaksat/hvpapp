@@ -38,6 +38,10 @@
        OMIM ID of the input VCF file
     --phenotypes, -p
        List of phenotype ids separated by commas (HPO or MPO terms)
+    --human, -h
+        Propagate human disease phenotypes to genes only    
+    --sp, -s
+        Propagate mouse and fish disease phenotypes to genes only	
     --all, -a
        Keep all variants for analysis (i.e. Do not filter variants based on their annotation type as coding variants or noncoding variants)
        Default: false
