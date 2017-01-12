@@ -79,6 +79,7 @@ public class Annotations {
                 out.println(line);
             }
         }
+        out.flush();
         out.close();
 
     }
@@ -119,10 +120,10 @@ public class Annotations {
         }
     }
 
-    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, String model, Map<String, Double> sims) throws Exception {
+    public Map<String, Double> getAnnotations(String vcfFilePath, String outFilePath, String mode, String model, Map<String, Double> sims) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(vcfFilePath + ".out"), 1073741824));
+            new FileWriter(outFilePath + ".out"), 1073741824));
         ArrayList<String> dataList = new ArrayList<String>();
         try(BufferedReader br = Files.newBufferedReader(Paths.get(vcfFilePath))) {
             String line;
@@ -287,6 +288,7 @@ public class Annotations {
             }
             out.println(r[0] + "\t" + simScore);
         }
+        out.flush();
         out.close();
         return result;
 

@@ -37,7 +37,7 @@ public class Classification {
         // Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
-    
+
 
     public void toolClassify(String fileName) throws Exception {
         FileReader fr = new FileReader(fileName + ".arff");
@@ -77,6 +77,7 @@ public class Classification {
         for (int i = 0; i < data.length; i++) {
             out.println(data[i].s + "\t" + data[i].r);
         }
+        out.flush();
         out.close();
     }
 
@@ -147,6 +148,7 @@ public class Classification {
         for (int i = 0; i < results.length; i++) {
             out.println(results[i]);
         }
+        out.flush();
         out.close();
     }
 
@@ -259,6 +261,7 @@ public class Classification {
             }
             br.close();
         }
+        out.flush();
         out.close();
     }
 
@@ -306,6 +309,7 @@ public class Classification {
            }
            br.close();
        }
+       out.flush();
        out.close();
     }
 
@@ -364,6 +368,7 @@ public class Classification {
         for (String res: fileNames) {
             out.println(res);
         }
+        out.flush();
         out.close();
 
     }

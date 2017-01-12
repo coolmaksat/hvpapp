@@ -24,7 +24,9 @@ public class Main {
     Map<String, List<String> > disPhenos;
 
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
-    String file = "";
+    String inFile = "";
+    @Parameter(names={"--outfile", "-of"}, description="Path to results file", required=false)
+    String outFile = "";
 
     @Parameter(names={"--phenotypes", "-p"}, description="List of phenotype ids separated by commas")
     String phenos = "";
@@ -141,6 +143,10 @@ public class Main {
             // throw new Exception("Please provide phenotypes or OMIM ID");
         }
 
+        if (this.outFile.equals("")) {
+            this.outFile = this.inFile;
+        }
+
     }
 
     public void runTool() {
@@ -172,13 +178,15 @@ public class Main {
                 mode = "2";
             }
             this.annotations.getAnnotations(
-                this.file, this.inh, this.model, sims);
-            this.classification.toArff(this.file, topPhenos, mode);
-            this.classification.toolClassify(this.file);
+                this.inFile, this.outFile, this.inh, this.model, sims);
+            this.classification.toArff(this.outFile, topPhenos, mode);
+            this.classification.toolClassify(this.outFile);
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
         } catch(Exception e) {
-            log.severe(e.getMessage());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            log.severe(sw.toString());
         }
     }
 
@@ -296,6 +304,7 @@ public class Main {
         for (WGS wgs: list) {
             out.println(wgs.line);
         }
+        out.flush();
         out.close();
     }
 
@@ -319,6 +328,7 @@ public class Main {
                 out.println(sb.toString());
             }
         }
+        out.flush();
         out.close();
     }
 
