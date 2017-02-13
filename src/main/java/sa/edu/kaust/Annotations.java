@@ -51,10 +51,10 @@ public class Annotations {
 
     }
 
-    public Annotations(Properties props, boolean all) throws Exception {
+    /*public Annotations(Properties props, boolean all) throws Exception {
         this(props);
         this.all = all;
-    }
+    }*/
 
 
     public void readGzip() throws Exception {
@@ -119,7 +119,7 @@ public class Annotations {
         }
     }
 
-    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, String model, Map<String, Double> sims) throws Exception {
+    public Map<String, Double> getAnnotations(String vcfFilePath, String mode, Map<String, Double> sims) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(vcfFilePath + ".out"), 1073741824));
@@ -277,9 +277,9 @@ public class Annotations {
         Arrays.parallelSetAll(data, annotation);
         for (String res: data) {
             String[] r = res.split("::");
-            if (!this.all && !r[1].equals(model)) {
+            /*if (!this.all && !r[1].equals(model)) {
                 continue;
-            }
+            }*/
             String gene = r[2];
             String simScore = ".";
             if (sims.containsKey(gene)) {
