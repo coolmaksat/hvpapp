@@ -20,15 +20,15 @@ public class Classification {
     RandomForest cls;
     public String[] topLevelPhenotypes;
 
-    public Classification(Properties props, String model, boolean human, boolean mod) throws Exception {
+    public Classification(Properties props, boolean human, boolean mod) throws Exception {
         // Loading the saved classifier
         String rfModelFile;
         if (human)
-           rfModelFile = props.getProperty("model" + model + "_human");
+           rfModelFile = props.getProperty("model" + "_human");
         else if (mod)
-           rfModelFile = props.getProperty("model" + model + "_mod");
+           rfModelFile = props.getProperty("model" + "_mod");
         else
-           rfModelFile = props.getProperty("model" + model);
+           rfModelFile = props.getProperty("model");
         //this.dataRoot = props.getProperty("dataRoot");
         //this.resultRoot = props.getProperty("resultRoot");
         //this.arffFilesPath = props.getProperty("arffFiles");
