@@ -9,7 +9,7 @@
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.1.zip)
+ 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip)
  2. Download the data files [phenomenet-vp-1.1-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.1.tar.gz)
  3. Extract the distribution files `phenomenet-vp-1.1.zip `
  4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.1
