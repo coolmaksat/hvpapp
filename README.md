@@ -9,11 +9,11 @@
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-1.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip)
- 2. Download the data files [phenomenet-vp-1.0-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.0.tar.gz)
- 3. Extract the distribution files `phenomenet-vp-1.0.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.0
- 5. cd `phenomenet-vp-1.0 `
+ 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.1.zip)
+ 2. Download the data files [phenomenet-vp-1.1-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.1.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-1.1.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.1
+ 5. cd `phenomenet-vp-1.1 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
@@ -31,9 +31,6 @@
     --inh, -i
        Mode of inheritance (dominant, recessive, x-linked, others, or unknown)
        Default: unknown
-    --model, -m
-       Prioritization model to be used (Coding or Noncoding)
-       Default: Coding
     --omim, -o
        OMIM ID of the input VCF file
     --phenotypes, -p
@@ -42,9 +39,7 @@
         Propagate human disease phenotypes to genes only    
     --sp, -s
         Propagate mouse and fish disease phenotypes to genes only	
-    --all, -a
-       Keep all variants for analysis (i.e. Do not filter variants based on their annotation type as coding variants or noncoding variants)
-       Default: false
+
 
 ## Usage:
 
@@ -52,11 +47,11 @@ To run the tool, the user needs to provide a **VCF file** along with either an *
 
 a) Prioritize disease-causing variants using OMIM ID and coding model while keeping all variants:
 
-	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600 -m Coding -a
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600
 	
 b) Prioritize disease-causing variants using a set of phenotypes, and parameters: coding model, and dominant inheritence mode, and filter noncoding variants from the result file
 
-	bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000174,HP:0000194,HP:0000218,HP:0000238,HP:0000244,HP:0000272,HP:0000303,HP:0000316,HP:0000322,HP:0000324,HP:0000327,HP:0000348,HP:0000431,HP:0000452,HP:0000453,HP:0000470,HP:0000486,HP:0000494,HP:0000508,HP:0000586,HP:0000678,HP:0001156,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003272,HP:0003307,HP:0003795,HP:0004209,HP:0004322,HP:0004440,HP:0005048,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0009602,HP:0009773,HP:0010055,HP:0010669,HP:0011304 -m Coding -i dominant 
+	bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000174,HP:0000194,HP:0000218,HP:0000238,HP:0000244,HP:0000272,HP:0000303,HP:0000316,HP:0000322,HP:0000324,HP:0000327,HP:0000348,HP:0000431,HP:0000452,HP:0000453,HP:0000470,HP:0000486,HP:0000494,HP:0000508,HP:0000586,HP:0000678,HP:0001156,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003272,HP:0003307,HP:0003795,HP:0004209,HP:0004322,HP:0004440,HP:0005048,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0009602,HP:0009773,HP:0010055,HP:0010669,HP:0011304 -i dominant 
    
    The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
    
@@ -80,7 +75,7 @@ Our prepared set of synthetic exomes are available [here](http://www.cbrc.kaust.
 
 Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
-## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP data files (i.e. prediction models and additional required files) version 1.0.
+## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
 
 # Contact
 

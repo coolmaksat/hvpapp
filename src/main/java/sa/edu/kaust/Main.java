@@ -39,7 +39,6 @@ public class Main {
     @Parameter(names={"--inh", "-i"}, description="Mode of inheritance")
     String inh = "unknown";
 
-    @Parameter(names={"--model", "-m"}, description="Prioritization model (Coding or Noncoding)")
     String model = "Coding";
 
     @Parameter(names={"--human", "-h"}, description="Propagate human disease phenotypes to genes only")
@@ -47,10 +46,6 @@ public class Main {
 
     @Parameter(names={"--sp", "-s"}, description="Propagate mouse and fish disease phenotypes to genes only")
     boolean mod = false;
-
-    @Parameter(names={"--all", "-a"}, description="Do not filter variants by coding or noncoding annotations")
-    boolean all = false;
-
 
     public Main() throws Exception {
         this.props = this.getProperties();
@@ -116,9 +111,6 @@ public class Main {
     }
 
     public void validateParameters() throws Exception {
-        if (!(this.model.equals("Coding") || this.model.equals("Noncoding"))) {
-            throw new Exception("Model should be Coding or Noncoding");
-        }
         if (!this.phenos.equals("")) {
             for (String pheno: this.phenos.split(",")) {
                 pheno = pheno.trim();
@@ -159,8 +151,8 @@ public class Main {
                 System.out.println(pheno);
             }
             this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
-            this.annotations = new Annotations(this.props, this.all);
-            this.classification = new Classification(this.props, this.model, this.human, this.mod);
+            this.annotations = new Annotations(this.props);
+            this.classification = new Classification(this.props, this.human, this.mod);
 
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
@@ -229,7 +221,7 @@ public class Main {
     }
 
     public void runClassifications(String[] args) throws Exception {
-        this.classification = new Classification(this.props, this.model, this.human, this.mod);
+        this.classification = new Classification(this.props, this.human, this.mod);
 
         if (args.length == 0) {
             throw new Exception("Please provide command name");

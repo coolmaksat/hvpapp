@@ -51,10 +51,10 @@ public class Annotations {
 
     }
 
-    public Annotations(Properties props, boolean all) throws Exception {
+    /*public Annotations(Properties props, boolean all) throws Exception {
         this(props);
         this.all = all;
-    }
+    }*/
 
 
     public void readGzip() throws Exception {
@@ -278,9 +278,9 @@ public class Annotations {
         Arrays.parallelSetAll(data, annotation);
         for (String res: data) {
             String[] r = res.split("::");
-            if (!this.all && !r[1].equals(model)) {
+            /*if (!this.all && !r[1].equals(model)) {
                 continue;
-            }
+            }*/
             String gene = r[2];
             String simScore = ".";
             if (sims.containsKey(gene)) {
