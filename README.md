@@ -9,11 +9,11 @@
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-1.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip)
- 2. Download the data files [phenomenet-vp-1.0-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.0.tar.gz)
- 3. Extract the distribution files `phenomenet-vp-1.0.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.0
- 5. cd `phenomenet-vp-1.0 `
+ 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.1.zip)
+ 2. Download the data files [phenomenet-vp-1.1-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.1.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-1.1.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.1
+ 5. cd `phenomenet-vp-1.1 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
@@ -80,7 +80,7 @@ Our prepared set of synthetic exomes are available [here](http://www.cbrc.kaust.
 
 Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
-## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP data files (i.e. prediction models and additional required files) version 1.0.
+## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
 
 # Contact
 
