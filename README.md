@@ -81,7 +81,7 @@ Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust
 
 Our prepared set of synthetic genomes are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/di_data) samples, and [tri-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/tri_data) samples. This directory contains VCF-format synthetic genomes created by appending either di -allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_var1.txt` and `di_var2.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_var1.txt` and `di_var2.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_var1.txt`, `tri_var2.txt`, and `tri_var3.txt` list their respective tri-allelic variants.
 
-## Results files are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/di_results) genomes, and [tri-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/tri_results) genomes. Please note that these results were obtained using PVP release version 1.1.
+Results files are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/di_results) genomes, and [tri-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/tri_results) genomes. We also provide a [summary table](http://www.cbrc.kaust.edu.sa/onto/pvp/dida-results/digenic-results.tsv) with an overview over all results. Please note that these results were obtained using PVP release version 1.1.
 
 # Contact
 
