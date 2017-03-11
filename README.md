@@ -75,7 +75,7 @@ Our prepared set of synthetic exomes are available [here](http://www.cbrc.kaust.
 
 Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic genome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
-## Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
+Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
 
 # Digenic Synthetic Genomes
 
