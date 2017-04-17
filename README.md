@@ -87,6 +87,9 @@ Results files are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/p
 
 # Publications
 
+Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, et al. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology 13(4): e1005500. https://doi.org/10.1371/journal.pcbi.1005500
+
+
 # License
 <pre>
 Copyright (c) 2016, King Abdullah University of Science and Technology
