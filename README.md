@@ -10,7 +10,7 @@
 ## Installation 
     
  1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip)
- 2. Download the data files [phenomenet-vp-1.1-data.zip](http://www.cbrc.kaust.edu.sa/onto/pvp/data-v1.1.tar.gz)
+ 2. Download the data files [phenomenet-vp-1.1-data.zip](http://bio2vec.net/pvp/data-v1.1.tar.gz)
  3. Extract the distribution files `phenomenet-vp-1.1.zip `
  4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.1
  5. cd `phenomenet-vp-1.1 `
@@ -19,7 +19,7 @@
 ## Database requirements 
   1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file.
   2. Unzip `whole_genome_SNVs_inclAnno.tsv.gz`
-  3. Download and run the script [generate.sh](http://www.cbrc.kaust.edu.sa/onto/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html)).
+  3. Download and run the script [generate.sh](http://www.bio2vec.net/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html)).
   4. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`.
   5. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`.
   6. Rename the above two files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
@@ -69,19 +69,19 @@ c) Run **phenomenet-vp** on the output file *filtered.recode.vcf* generated from
  
 # Mendelian Synthetic Exomes
 
-Our prepared set of synthetic exomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+Our prepared set of synthetic exomes are available [here](http://www.bio2vec.net/pvp/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
 # Mendelian Synthetic Genomes
 
-Our prepared set of synthetic genomes are available [here](http://www.cbrc.kaust.edu.sa/onto/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic genome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+Our prepared set of synthetic genomes are available [here](http://www.bio2vec.net/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic genome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
 
-Results for the above sets of synetheic exomes and genomes can be found [here](http://www.cbrc.kaust.edu.sa/onto/pvp/exome_results/) and  [here](http://www.cbrc.kaust.edu.sa/onto/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
+Results for the above sets of synetheic exomes and genomes can be found [here](http://www.bio2vec.net/pvp/exome_results/) and  [here](http://www.bio2vec.net/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
 
 # Digenic Synthetic Genomes
 
-Our prepared set of synthetic genomes are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/di_data) samples, and [tri-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/tri_data) samples. This directory contains VCF-format synthetic genomes created by appending either di -allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_var1.txt` and `di_var2.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_var1.txt` and `di_var2.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_var1.txt`, `tri_var2.txt`, and `tri_var3.txt` list their respective tri-allelic variants.
+Our prepared set of synthetic genomes are available for [di-allelic](http://www.bio2vec.net/pvp/dida/di_data) samples, and [tri-allelic](http://www.bio2vec.net/pvp/dida/tri_data) samples. This directory contains VCF-format synthetic genomes created by appending either di -allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_var1.txt` and `di_var2.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_var1.txt` and `di_var2.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_var1.txt`, `tri_var2.txt`, and `tri_var3.txt` list their respective tri-allelic variants.
 
-Results files are available for [di-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/di_results) genomes, and [tri-allelic](http://www.cbrc.kaust.edu.sa/onto/pvp/dida/tri_results) genomes. We also provide a [summary table](http://www.cbrc.kaust.edu.sa/onto/pvp/dida-results/digenic-results.tsv) with an overview over all results. Please note that these results were obtained using PVP release version 1.1.
+Results files are available for [di-allelic](http://www.bio2vec.net/pvp/dida/di_results) genomes, and [tri-allelic](http://www.bio2vec.net/pvp/dida/tri_results) genomes. We also provide a [summary table](http://www.bio2vec.net/pvp/dida-results/digenic-results.tsv) with an overview over all results. Please note that these results were obtained using PVP release version 1.1.
 
 # Contact
 
