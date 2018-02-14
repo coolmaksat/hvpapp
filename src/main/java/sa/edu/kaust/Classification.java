@@ -5,242 +5,382 @@ import java.util.*;
 import java.util.function.*;
 import java.nio.*;
 import java.nio.file.*;
-
-import weka.classifiers.trees.RandomForest;
-import weka.core.Instances;
-import weka.core.Instance;
-
+import org.jgrapht.*;
+import org.jgrapht.*;
+import org.jgrapht.graph.*;
+import org.jgrapht.alg.*;
 
 public class Classification {
 
-    public String dataRoot = "";
-    public String resultRoot = "";
-    public String modelName = "";
-    public String arffFilesPath = "";
-    RandomForest cls;
+    public String modelFile = "";
     public String[] topLevelPhenotypes;
 
-    public Classification(Properties props, boolean human, boolean mod) throws Exception {
+    public Classification(Properties props) throws Exception {
         // Loading the saved classifier
-        String rfModelFile;
-        if (human)
-           rfModelFile = props.getProperty("model" + "_human");
-        else if (mod)
-           rfModelFile = props.getProperty("model" + "_mod");
-        else
-           rfModelFile = props.getProperty("model");
-        //this.dataRoot = props.getProperty("dataRoot");
-        //this.resultRoot = props.getProperty("resultRoot");
-        //this.arffFilesPath = props.getProperty("arffFiles");
-        this.cls = (RandomForest)weka.core.SerializationHelper.read(rfModelFile);
-        this.modelName = Paths.get(rfModelFile).getFileName().toString().split("\\.")[0] + "/";
-        // Files.createDirectories(Paths.get(this.resultRoot + this.modelName));
+        this.modelFile = props.getProperty("model");
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
 
 
     public void toolClassify(String fileName) throws Exception {
-        FileReader fr = new FileReader(fileName + ".arff");
-        Instances is = new Instances(fr);
-        is.setClassIndex(0);
-        Double[] results = new Double[is.numInstances()];
+        //FileReader fr = new FileReader(fileName + ".csv");
+		long fileCount = Files.lines(Paths.get(fileName + ".csv")).count() - 1;
+		Double[] results = new Double[(int)fileCount];
         Classification that = this;
-        IntFunction<Double> clsfy = new IntFunction<Double>() {
-            @Override
-            public Double apply(int i) {
-                Instance instance = is.instance(i);
-                try {
-                    double[] result = that.cls.distributionForInstance(instance);
-                    return result[0];
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return 0.0;
-            }
-        };
-        Arrays.parallelSetAll(results, clsfy);
-        DataResult[] data = new DataResult[results.length];
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".out"))) {
-            String line;
-            int i = 0;
-            while((line = br.readLine()) != null) {
-                data[i] = new DataResult(line, results[i]);
-                ++i;
-            }
-            br.close();
-        }
-        Arrays.sort(data, Collections.reverseOrder());
+		String param1 = fileName + ".csv";
+		String param2 = this.modelFile;
+		String line = null;
+		String pythonScript;
+		pythonScript = "data/score.py";
+		try {
+		ProcessBuilder pb = new ProcessBuilder("python",pythonScript,""+param1,""+param2);
+		Process p = pb.start();
+		int x = 0;
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		while ((line = in.readLine()) != null) {
+			results[x] = Double.valueOf(line);
+			x++;
+		}
+		int val = p.waitFor();
+		p.getInputStream().close();
+		p.getOutputStream().close();
+		p.getErrorStream().close();
+		if (val == 0) {
+			System.out.println("Finished Annotation");
+			DataResult[] data = new DataResult[results.length];
+			try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".out"))) {
+				line = null;
+				int i = 0;
+				while((line = br.readLine()) != null) {
+					data[i] = new DataResult(line, results[i]);
+					++i;
+				}
+				br.close();
+			}
+			Arrays.sort(data, Collections.reverseOrder());
 
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(fileName + ".res"), 104857600));
-        out.println("Chr\tStart\tRef\tAlt\tGT\tGene\tCADD\tGWAVA\tDANN\tSim_Score\tPrediction_Score");
-        for (int i = 0; i < data.length; i++) {
-            out.println(data[i].s + "\t" + data[i].r);
+			PrintWriter out = new PrintWriter(new BufferedWriter(
+				new FileWriter(fileName + ".res"), 104857600));
+			out.println("Chr\tStart\tRef\tAlt\tGT\tGene\tCADD\tGWAVA\tDANN\tSim_Score\tPrediction_Score");
+			for (int i = 0; i < data.length; i++) {
+				out.println(data[i].s + "\t" + data[i].r);
+			}
+			out.flush();
+			out.close();
+		}
+		else
+			System.out.println("Error in annotation!");
+		} catch (Exception e) {
+			e.printStackTrace();
+    }
+    }
+
+	public void toolFilter(String fileName, List<String> genes, int param) throws Exception {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".top"), 1073741824));
+		List<String> vars = new ArrayList<String>();
+		try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".res"))) {
+            String line;
+			List<String> myList= new ArrayList<String>();
+			Map<String, Integer> geneCount = new HashMap<String, Integer>();
+            while((line = br.readLine()) != null) {
+                String[] items = line.split("\t", -1);
+				String mygene = items[5];
+				//check if not in my list, add it, and write line
+				if (genes.contains(mygene)) {
+					if (!myList.contains(mygene)) {
+						out.println(line);
+						vars.add(line);
+						myList.add(mygene);
+						geneCount.put(mygene, 1);
+					}
+					else {
+						//check if count doesn't exceed param
+						int count = geneCount.get(mygene);
+						if (count < param) {
+							geneCount.put(mygene, count + 1);
+							out.println(line);
+							vars.add(line);
+						}
+					}
+				}
+			}
+			br.close();
         }
         out.flush();
         out.close();
-    }
+}
 
-    public void classifyFiles(int ind) throws Exception {
-        String dataRoot = this.resultRoot;
-        List<String> list = new ArrayList<String>();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.arffFilesPath))) {
+	public void toolDigenic(String fileName, Map<String, List<String> > interactions, int param) throws Exception {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".digenic"), 1073741824));
+		for (int i = 1; i<=param; i++) {
+		out.print("Chr"+i+"\tStart"+i+"\tRef"+i+"\tAlt"+i+"\tGT"+i+"\tGene"+i+"\tCADD\tSim_Score\tPrediction_Score"+i+"\t");
+		}
+		out.println("Combined_Score");
+		try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".top"))) {
             String line;
+			List<String> vars = new ArrayList<String>();
             while((line = br.readLine()) != null) {
-                list.add(line);
+                 vars.add(line);
             }
-            br.close();
-        }
-        String[] fileNames = list.toArray(new String[list.size()]);
-        String fileName = fileNames[ind];
-        if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
-            System.out.println("Starting classification for " + fileName);
-            this.classify(fileName);
-            System.out.println("Classification finished for " + fileName);
-        } else {
-            System.out.println("Not running classification for " + fileName);
-        }
-    }
-
-    public void classify(int ind) throws Exception {
-        String dataRoot = this.resultRoot;
-        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
-        List<String> list = new ArrayList<String>();
-        for (Path filePath: files) {
-            String fileName = filePath.getFileName().toString();
-            list.add(fileName);
-        }
-        String[] fileNames = list.toArray(new String[list.size()]);
-        String fileName = fileNames[ind];
-        if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
-            System.out.println("Starting classification for " + fileName);
-            this.classify(fileName);
-            System.out.println("Classification finished for " + fileName);
-        } else {
-            System.out.println("Not running classification for " + fileName);
-        }
-    }
-
-
-    public void classify(String fileName) throws Exception {
-        String dataRoot = this.resultRoot;
-        FileReader fr = new FileReader(dataRoot + fileName);
-        Instances is = new Instances(fr);
-        is.setClassIndex(0);
-        String[] results = new String[is.numInstances()];
-        Classification that = this;
-        IntFunction<String> clsfy = new IntFunction<String>() {
-            @Override
-            public String apply(int i) {
-                Instance instance = is.instance(i);
-                try {
-                    double[] result = that.cls.distributionForInstance(instance);
-                    return result[0] + " " + result[1];
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-        };
-        Arrays.parallelSetAll(results, clsfy);
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(dataRoot + this.modelName + fileName + ".res"), 104857600));
-        for (int i = 0; i < results.length; i++) {
-            out.println(results[i]);
+			br.close();
+		//process combinations
+		List<DataResult> data = new ArrayList<DataResult>();
+		//int index = 0;
+		for(int i=0; i < vars.size(); i++){
+			double combined_score = 0.0;
+			String[] set1 = vars.get(i).split("\t", -1);
+			String first_var = "";
+			String s = "";
+			for (int x=0; x < 7; x++){
+				first_var += set1[x] + "\t";
+			}
+			first_var += set1[9] + "\t";
+			first_var += set1[10];
+			String first_gene = vars.get(i).split("\t", -1)[5];
+			double first_pred = Double.parseDouble(vars.get(i).split("\t", -1)[10]);
+			//second loop
+			for (int j=i+1; j < vars.size(); j++) {
+				String[] set2 = vars.get(j).split("\t", -1);
+				String second_var = "";
+				for (int y=0; y < 7; y++){
+					second_var += set2[y] + "\t";
+				}
+				second_var += set2[9] + "\t";
+				second_var += set2[10];
+				String second_gene = vars.get(j).split("\t", -1)[5];
+				double second_pred = Double.parseDouble(vars.get(j).split("\t", -1)[10]);
+				//check if both genes interact
+				if ((interactions.get(first_gene).contains(second_gene)) || first_gene.equals(second_gene)){
+					combined_score = first_pred + second_pred;
+					s = first_var + "\t" + second_var;
+					DataResult mydata = new DataResult(s, combined_score);
+					data.add(mydata);
+				}
+			}
+		}
+		Collections.sort(data, Collections.reverseOrder());
+		for (int i = 0; i < data.size(); i++) {
+            out.println(data.get(i).s + "\t" + data.get(i).r);
         }
         out.flush();
         out.close();
+		}
     }
 
-    public void classifyAll() throws Exception {
-        String dataRoot = this.resultRoot;
-        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.arff");
-        List<String> list = new ArrayList<String>();
-        for (Path filePath: files) {
-            String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(dataRoot + this.modelName + fileName + ".res")) || Files.size(Paths.get(dataRoot + this.modelName + fileName + ".res")) == 0) {
-                list.add(fileName);
+	public void toolTrigenic(String fileName, Map<String, List<String> > interactions, int param) throws Exception {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".trigenic"), 1073741824));
+		for (int i = 1; i<=param; i++) {
+		out.print("Chr"+i+"\tStart"+i+"\tRef"+i+"\tAlt"+i+"\tGT"+i+"\tGene"+i+"\tCADD\tSim_Score\tPrediction_Score"+i+"\t");
+		}
+		out.println("Combined_Score");
+		try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".top"))) {
+            String line;
+			List<String> vars = new ArrayList<String>();
+            while((line = br.readLine()) != null) {
+                 vars.add(line);
             }
+			br.close();
+		//process combinations
+		List<DataResult> data = new ArrayList<DataResult>();
+		//int index = 0;
+		for(int i=0; i < vars.size(); i++){
+			double combined_score = 0.0;
+			String[] set1 = vars.get(i).split("\t", -1);
+			String first_var = "";
+			String s = "";
+			for (int x=0; x < 7; x++){
+				first_var += set1[x] + "\t";
+			}
+			first_var += set1[9] + "\t";
+			first_var += set1[10];
+			String first_gene = vars.get(i).split("\t", -1)[5];
+			double first_pred = Double.parseDouble(vars.get(i).split("\t", -1)[10]);
+			//second loop
+			for (int j=i+1; j < vars.size(); j++) {
+				String[] set2 = vars.get(j).split("\t", -1);
+				String second_var = "";
+				for (int y=0; y < 7; y++){
+					second_var += set2[y] + "\t";
+				}
+				second_var += set2[9] + "\t";
+				second_var += set2[10];
+				String second_gene = vars.get(j).split("\t", -1)[5];
+				double second_pred = Double.parseDouble(vars.get(j).split("\t", -1)[10]);
+				for (int k=j+1; k < vars.size(); k++) {
+					String[] set3 = vars.get(k).split("\t", -1);
+					String third_var = "";
+						for (int z=0; z < 7; z++){
+						third_var += set3[z] + "\t";
+						}
+					third_var += set3[9] + "\t";
+					third_var += set3[10];
+					String third_gene = vars.get(k).split("\t", -1)[5];
+					double third_pred = Double.parseDouble(vars.get(k).split("\t", -1)[10]);
+					//check if both genes interact
+					//if genes are identical
+					if ((first_gene.equals(second_gene)) && (second_gene.equals(third_gene))) {
+						combined_score = first_pred + second_pred + third_pred;
+						s = first_var + "\t" + second_var + "\t" + third_var;
+						DataResult mydata = new DataResult(s, combined_score);
+						data.add(mydata);
+					}
+					else {
+						if ((interactions.get(first_gene).contains(second_gene)) && (interactions.get(first_gene).contains(third_gene))){
+							combined_score = first_pred + second_pred + third_pred;
+							s = first_var + "\t" + second_var + "\t" + third_var;
+							DataResult mydata = new DataResult(s, combined_score);
+							data.add(mydata);
+						}
+						else if ((interactions.get(first_gene).contains(second_gene)) && (interactions.get(second_gene).contains(third_gene))){
+							combined_score = first_pred + second_pred + third_pred;
+							s = first_var + "\t" + second_var + "\t"+ third_var;
+							DataResult mydata = new DataResult(s, combined_score);
+							data.add(mydata);
+						}
+						else if ((interactions.get(first_gene).contains(third_gene)) && (interactions.get(third_gene).contains(second_gene))){
+							combined_score = first_pred + second_pred + third_pred;
+							s = first_var + "\t" + second_var + "\t"+ third_var;
+							DataResult mydata = new DataResult(s, combined_score);
+							data.add(mydata);
+						}
+					}
+				}
+			}
+		}
+		Collections.sort(data, Collections.reverseOrder());
+		for (int i = 0; i < data.size(); i++) {
+            out.println(data.get(i).s + "\t" + data.get(i).r);
         }
-        String[] fileNames = list.toArray(new String[list.size()]);
-        Classification that = this;
-        IntFunction<String> clsfy = new IntFunction<String>() {
-            @Override
-            public String apply(int i) {
-                String fileName = list.get(i);
-                try {
-                    System.out.println("Classifying file " + fileName);
-                    that.classify(fileName);
-                    System.out.println("Classifying file " + fileName + " finished");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return fileName;
-            }
-        };
-
-        Arrays.parallelSetAll(fileNames, clsfy);
-
+        out.flush();
+        out.close();
+		}
     }
-
-    public void toArffAll() throws Exception {
-        String dataRoot = this.dataRoot;
-        String resultRoot = this.resultRoot;
-        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
-        List<String> list = new ArrayList<String>();
-        for (Path filePath: files) {
-            String fileName = filePath.getFileName().toString();
-            if (!Files.exists(Paths.get(resultRoot + fileName + ".arff"))  || Files.size(Paths.get(resultRoot + fileName + ".arff")) == 0) {
-                list.add(fileName);
-            }
-        }
-        String[] fileNames = list.toArray(new String[list.size()]);
-        Classification that = this;
-        IntFunction<String> arff = new IntFunction<String>() {
-            @Override
-            public String apply(int i) {
-                String fileName = list.get(i);
-                try {
-                    System.out.println("Processing file " + fileName);
-                    that.toArff(fileName);
-                    System.out.println("Processing file " + fileName + " finished");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return fileName;
-            }
-        };
-
-        Arrays.parallelSetAll(fileNames, arff);
-
-    }
-
-    public void toArff(String fileName, Set<String> topPhenos, String inh) throws Exception {
+	public void toolCombine(String fileName, UndirectedGraph<String, DefaultEdge> actions, int param) throws Exception {
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".digenic"), 1073741824));
+		for (int i = 1; i<=param; i++) {
+		out.print("Chr"+i+"\tStart"+i+"\tRef"+i+"\tAlt"+i+"\tGT"+i+"\tGene"+i+"\tCADD\tSim_Score\tPrediction_Score"+i+"\t");
+		}
+		out.println("Combined_Score");
+		List<String> vars = new ArrayList<String>();
+		try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".top"))) {
+			String line;
+			while((line = br.readLine()) != null) {
+				 vars.add(line);
+			}
+			br.close(); 
+		}
+		//process combinations
+		List<DataResult> data = new ArrayList<DataResult>();
+		List<List<String>> combinations = getCombinations(param, vars);
+		for (List<String> l : combinations) {
+			Set<String> genes = new HashSet<String>();
+			for (String s : l) {
+				String gene = s.split("\t", -1)[5];
+				genes.add(gene);
+			}
+			//do connectivity check
+			AsSubgraph<String, DefaultEdge> mysub = new AsSubgraph(actions, genes);
+			//System.out.println(mysub.toString());
+			ConnectivityInspector cc = new ConnectivityInspector(mysub);
+			if (cc.isGraphConnected()) {
+				double combined_score = 0.0;
+				String mycombination = "";
+				//accumulate prediction score
+				for (String s : l) {
+					if (!mycombination.isEmpty())
+						mycombination += "\t";
+					combined_score += Double.parseDouble(s.split("\t", -1)[10]);
+					String[] set = s.split("\t", -1);
+					for (int x=0; x < 7; x++) {
+						mycombination += set[x] + "\t";
+					}
+					mycombination += set[9] + "\t";
+					mycombination += set[10];
+				}
+				DataResult mydata = new DataResult(mycombination, combined_score);
+				data.add(mydata);
+			}
+		}
+		Collections.sort(data, Collections.reverseOrder());
+		for (int i = 0; i < data.size(); i++) {
+			out.println(data.get(i).s + "\t" + data.get(i).r);
+		}
+		out.flush();
+		out.close();
+	}
+	public void toCSV(String fileName, Set<String> topPhenos, String inh) throws Exception {
         PrintWriter out = new PrintWriter(new BufferedWriter(
-           new FileWriter(fileName + ".arff"), 104857600));
-        out.println("@relation " + fileName);
-        out.println();
-        out.println("@attribute TYPE {CASE,CTRL}");
+           new FileWriter(fileName + ".csv"), 104857600));
+
+        out.print("TYPE,geno,cadd,gwava,dann,sim");
         for (String topPheno: this.topLevelPhenotypes) {
-            out.println("@attribute " + topPheno + " numeric");
+            out.print("," + topPheno);
         }
-        out.println("@attribute inh numeric");
-        out.println("@attribute cadd numeric");
-        out.println("@attribute gwava numeric");
-        out.println("@attribute sim numeric");
-        out.println("@attribute dann numeric");
-        out.println("@attribute geno {1/1,0/1}");
-        out.println("");
-        out.println("@data");
+        out.print(",inh_0,inh_1,inh_2,inh_3,CADD_impute,GWAVA_impute,Similarity_score_impute,DANN_impute");
+		out.println();
         try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName + ".out"))) {
             boolean cs = true;
-            String line;
+            String line, geno, cadd, dann, gwava, sim, cadd_imp, dann_imp, gwava_imp, sim_imp, inh_0, inh_1, inh_2, inh_3;			
             while((line = br.readLine()) != null) {
+				cadd_imp = "0";
+				dann_imp = "0";
+				gwava_imp = "0";
+				sim_imp = "0";
+				inh_0 = "0";
+				inh_1 = "0";
+				inh_2 = "0";
+				inh_3 = "0";
+				geno = "0";
                 String[] items = line.split("\t", -1);
                 for(int i = 0; i < items.length; i++) {
                    if (items[i].equals(".")) items[i] = "?";
                 }
-                out.print("CTRL");
+				//geno,cadd,gwava,dann,sim
+				cadd = items[6];
+				dann = items[8];
+				gwava = items[7];
+				sim = items[9];
+				//modify genotype
+				if (items[4].equals("1/0")) {
+                    items[4] = "0/1";
+					geno = "0";
+                } else if (items[4].equals("1/1")) {
+					geno = "1";
+				} else if (items[4].equals("0/1")) {
+					geno = "0";
+				}
+				if (cadd.equals("?")) {
+					cadd_imp = "1";
+					cadd = "24.178707394956216";
+				}
+				if (dann.equals("?")) {
+					dann_imp = "1";
+					dann = "0.90596700944414021";
+				}
+				if (gwava.equals("?")) {
+					gwava_imp = "1";
+					gwava = "0.46623976853229876";
+				}
+				if (sim.equals("?")) {
+					sim_imp = "1";
+					sim = "0.78501856453042218";
+				}
+				if (inh.equals("0")) {
+					inh_0 = "1";
+				} else if (inh.equals("1")) {
+					inh_1 = "1";
+				} else if (inh.equals("2")) {
+					inh_2 = "1";
+				} else {
+					inh_3 = "1";
+				}
+				//print new NN-friendly format
+				out.print("0");
+				out.print("," + geno);
+				out.print("," + cadd);
+				out.print("," + gwava);
+				out.print("," + dann);
+				out.print("," + sim);
                 for (String topPheno: this.topLevelPhenotypes) {
                     if (topPhenos.contains(topPheno)) {
                         out.print(",1");
@@ -248,149 +388,21 @@ public class Classification {
                         out.print(",0");
                     }
                 }
-                out.print("," + inh);
-                out.print("," + items[6]); // CADD
-                out.print("," + items[7]); // GWAVA
-                out.print("," + items[9]); // SIM
-                out.print("," + items[8]); // DANN
-                if (items[4].equals("1/0")) {
-                    items[4] = "0/1";
-                }
-                out.print("," + items[4]); // geno
+                out.print("," + inh_0);
+				out.print("," + inh_1);
+				out.print("," + inh_2);
+				out.print("," + inh_3);
+				out.print("," + cadd_imp);
+				out.print("," + gwava_imp);
+				out.print("," + sim_imp);
+				out.print("," + dann_imp);
+
                 out.println();
             }
             br.close();
         }
         out.flush();
         out.close();
-    }
-
-    public void toArff(String fileName) throws Exception {
-        String dataRoot = this.dataRoot;
-        String resultRoot = this.resultRoot;
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-           new FileWriter(resultRoot + fileName + ".arff"), 104857600));
-        out.println("@relation " + fileName);
-        out.println();
-        out.println("@attribute TYPE {CASE,CTRL}");
-        for (String topPheno: this.topLevelPhenotypes) {
-            out.println("@attribute " + topPheno + " numeric");
-        }
-        // out.println("@attribute inh numeric");
-        out.println("@attribute cadd numeric");
-        out.println("@attribute gwava numeric");
-        out.println("@attribute sim numeric");
-        out.println("@attribute dann numeric");
-        out.println("@attribute geno {1/1,0/1}");
-        out.println("@attribute moi_rz numeric");
-        out.println("");
-        out.println("@data");
-       try(BufferedReader br = Files.newBufferedReader(Paths.get(dataRoot + fileName))) {
-           String line = br.readLine(); // reading the header
-           boolean cs = true;
-           while((line = br.readLine()) != null) {
-               String[] items = line.split("\t", -1);
-               if (!(items[58].equals("1/1") || items[58].equals("0/1"))) {
-                   continue;
-               }
-               for(int i = 0; i < items.length; i++) {
-                   if (items[i].equals(".")) items[i] = "?";
-               }
-               out.print("CTRL");
-               for(int i = 0; i < items.length; i++) {
-                   out.print("," + items[i]);
-               }
-               // out.print("," + items[57]); // CADD
-               // out.print("," + items[58]); // GWAVA
-               // out.print("," + items[60]); // SIM
-               // out.print("," + items[59]); // DANN
-               // out.print("," + items[56]); // geno
-               out.println();
-           }
-           br.close();
-       }
-       out.flush();
-       out.close();
-    }
-
-    public String sortResults(String fileName) throws Exception {
-        String resDataRoot = this.resultRoot + this.modelName + "/";
-        List<Result> resList = new ArrayList<Result>();
-        int c = resList.size() - 1;
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(resDataRoot + fileName + ".arff.res"))) {
-            String line = null;
-            int i = 0;
-            while((line = br.readLine()) != null) {
-                double d = Double.parseDouble(line.split(" ")[0]);
-                resList.add(new Result(i, d));
-                i++;
-            }
-            br.close();
-        }
-        Collections.sort(resList, Collections.reverseOrder());
-        for (int i = 0; i < resList.size(); i++) {
-            if (resList.get(i).i == resList.size() - 1) {
-                return i + " " + resList.get(i).d;
-            }
-        }
-        return "";
-    }
-
-    public void sortAll() throws Exception {
-        String dataRoot = this.dataRoot;
-        DirectoryStream<Path> files = Files.newDirectoryStream(Paths.get(dataRoot), "*.vcf");
-        List<String> list = new ArrayList<String>();
-        for (Path filePath: files) {
-            String fileName = filePath.getFileName().toString();
-            list.add(fileName);
-        }
-        String[] fileNames = list.toArray(new String[list.size()]);
-        Classification that = this;
-        IntFunction<String> sort = new IntFunction<String>() {
-            @Override
-            public String apply(int i) {
-                String fileName = list.get(i);
-                try {
-                    System.out.println("Processing file " + fileName);
-                    fileName = fileName + " " + that.sortResults(fileName);
-                    System.out.println("Processing file " + fileName + " finished");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return fileName;
-            }
-        };
-
-        Arrays.parallelSetAll(fileNames, sort);
-
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter(this.resultRoot + this.modelName.substring(0, this.modelName.length() - 1) + ".res"), 104857600));
-        for (String res: fileNames) {
-            out.println(res);
-        }
-        out.flush();
-        out.close();
-
-    }
-
-    public void getMissingResults() {
-
-    }
-
-    class Result implements Comparable<Result> {
-
-        double d;
-        int i;
-
-        public Result(int i, double d){
-            this.i = i;
-            this.d = d;
-        }
-
-        @Override
-        public int compareTo(Result r) {
-            return Double.compare(this.d, r.d);
-        }
     }
 
     class DataResult implements Comparable<DataResult> {
@@ -408,4 +420,28 @@ public class Classification {
             return Double.compare(this.r, dr.r);
         }
     }
+
+	public static <String> List<List<String>> getCombinations(int k, List<String> list) {
+    List<List<String>> combinations = new ArrayList<List<String>>();
+    if (k == 0) {
+        combinations.add(new ArrayList<String>());
+        return combinations;
+    }
+    for (int i = 0; i < list.size(); i++) {
+        String element = list.get(i);
+        List<String> rest = getSublist(list, i+1);
+        for (List<String> previous : getCombinations(k-1, rest)) {
+            previous.add(element);
+            combinations.add(previous);
+        }
+    }
+    return combinations;
+}
+	public static <String> List<String> getSublist(List<String> list, int i) {
+		List<String> sublist = new ArrayList<String>();
+		for (int j = i; j < list.size(); j++) {
+			sublist.add(list.get(j));
+		}
+		return sublist;
+	}
 }
