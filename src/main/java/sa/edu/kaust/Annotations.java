@@ -17,23 +17,22 @@ public class Annotations {
     boolean[] busy;
     int tabixN;
     int cur = 0;
-    TabixReader[] tabixes;
     TabixReader[] caddTabixes;
     TabixReader[] dannTabixes;
     TabixReader[] gwavaTabixes;
     Map<String, String> ccdsGenes;
     boolean all = false;
+	String dataFile;
 
     public Annotations(Properties props) throws Exception {
         this.props = props;
         this.tabixN = 50;
-        this.tabixes = new TabixReader[this.tabixN];
         this.caddTabixes = new TabixReader[this.tabixN];
         this.dannTabixes = new TabixReader[this.tabixN];
         this.gwavaTabixes = new TabixReader[this.tabixN];
+		this.dataFile = props.getProperty("annoPath");
         this.busy = new boolean[this.tabixN];
         for (int i = 0; i < this.tabixN; i++) {
-            this.tabixes[i] = new TabixReader(this.props.getProperty("dbPath"));
             this.caddTabixes[i] = new TabixReader(this.props.getProperty("caddPath"));
             this.dannTabixes[i] = new TabixReader(this.props.getProperty("dannPath"));
             this.gwavaTabixes[i] = new TabixReader(this.props.getProperty("gwavaPath"));
@@ -51,80 +50,35 @@ public class Annotations {
 
     }
 
-    /*public Annotations(Properties props, boolean all) throws Exception {
-        this(props);
-        this.all = all;
-    }*/
-
-
-    public void readGzip() throws Exception {
-        Map<String, List<String> > map = new HashMap<String, List<String> >();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/1maxat.txt"))) {
-            String line;
-            while((line = br.readLine()) != null) {
-                map.put(line.trim(), new ArrayList<String>());
-            }
-        }
-        PrintWriter out = new PrintWriter(new BufferedWriter(
-            new FileWriter("data/output-adeeb.txt"), 1073741824));
-        InputStream fileStream = new FileInputStream("data/db/dbNSFP.gz");
-        InputStream gzipStream = new GZIPInputStream(fileStream);
-        Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
-        BufferedReader buffered = new BufferedReader(decoder);
-        String line = buffered.readLine();
-        out.println(line);
-        while((line = buffered.readLine()) != null) {
-            String[] items = line.split("\t", -1);
-            if (!items[6].equals(".") && map.containsKey(items[6])) {
-                out.println(line);
-            }
-        }
-        out.flush();
-        out.close();
-
-    }
-
-    public void readDbFile() throws Exception {
-        String filePath = "data/db/cadd.txt";
-        FileChannel channel = new RandomAccessFile(filePath, "rw").getChannel();
-        int bufferSize = Integer.MAX_VALUE / 2;
-        int total = (int)(channel.size() / bufferSize);
-        if (channel.size() % bufferSize > 0) {
-            total++;
-        }
-        MappedByteBuffer[] buffers = new MappedByteBuffer[total];
-        long start = 0;
-        for (int i = 0; i < buffers.length; i++) {
-            buffers[i] = channel.map(FileChannel.MapMode.READ_WRITE, start, bufferSize);
-            start += bufferSize;
-        }
-        StringBuilder sb = new StringBuilder();
-        char c;
-        Map<String, Double> cadd = new HashMap<String, Double>();
-        for (int i = 0; i < buffers.length; i++) {
-            sb.append(Charset.defaultCharset().decode(buffers[i]).toString());
-            int l = sb.lastIndexOf("\n");
-            String[] lines = sb.substring(0, l).split("\n");
-            String t = sb.substring(l + 1);
-            sb = new StringBuilder(t);
-            System.out.println(sb.length());
-            for (String line: lines){
-                if (line.startsWith("#")) {
-                    continue;
-                }
-                String[] items = line.split("\t");
-                String key = items[0] + "_" + items[1] + "_" + items[2] + "_" + items[3];
-                double score = Double.parseDouble(items[7]);
-                cadd.put(key, score);
-            }
-        }
-    }
-
     public Map<String, Double> getAnnotations(String vcfFilePath, String outFilePath, String mode, String model, Map<String, Double> sims) throws Exception {
         Map<String, Double> result = new HashMap<String, Double>();
         PrintWriter out = new PrintWriter(new BufferedWriter(
             new FileWriter(outFilePath + ".out"), 1073741824));
         ArrayList<String> dataList = new ArrayList<String>();
+		//load preannotated data
+		Map<String, List<String> > anno_data =  new HashMap<String, List<String> >();
+		try(BufferedReader br = Files.newBufferedReader(Paths.get(dataFile))) {
+			String line;
+            while((line = br.readLine()) != null) {
+				String[] items = line.split("\t");
+				String chr = items[0];
+				String pos = items[1];
+				String ref = items[2];
+				String alt = items[3];
+				String gene = items[4].replaceAll("_","-");
+				String cadd = items[5];
+				String gwava = items[6];
+				String dann = items[7];
+				String mykey = chr + "_" + pos;
+				String myval = ref + "_" + alt + "_" + gene + "_" + cadd + "_" + gwava + "_" + dann;
+				String inter = items[0];
+                if (!anno_data.containsKey(mykey)) {
+                    anno_data.put(mykey, new ArrayList<String>());
+                }
+                List<String> annoSet = anno_data.get(mykey);
+                annoSet.add(myval);
+			}
+		}
         try(BufferedReader br = Files.newBufferedReader(Paths.get(vcfFilePath))) {
             String line;
             while((line = br.readLine()) != null) {
@@ -133,13 +87,33 @@ public class Annotations {
                 }
                 String[] items = line.split("\t");
                 String genotype = items[9].split(":")[0].replaceAll("\\|", "\\/");
+				String alt = items[4];
                 if (!(genotype.equals("1/0") || genotype.equals("0/1") || genotype.equals("1/1"))) {
                     continue;
                 }
                 if (mode.equals("recessive") && (genotype.equals("0/1") || genotype.equals("1/0"))) {
                     continue;
                 }
-                dataList.add(line);
+				if (alt.contains(",")) {
+					String[] allele = alt.split(",");
+					for (String s: allele) {
+						String chr = items[0];
+						String pos = items[1];
+						String rsid = items[2];
+						String ref = items[3];
+						String qual = items[5];
+						String pass = items[6];
+						String info = items[7];
+						String format = items[8];
+						String gt = items[9];
+						String var = String.format(
+                        "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",
+                        chr, pos, rsid, ref, s, qual, pass,
+                        info, format, gt);
+						dataList.add(var);
+					}
+				} else
+					dataList.add(line);
             }
         }
         String[] data = dataList.toArray(new String[dataList.size()]);
@@ -151,20 +125,19 @@ public class Annotations {
                     String line = data[i];
                     String[] items = line.split("\t");
                     String chr = items[0];
+					//remove chr prefix if any
+					if (chr.toLowerCase().startsWith("chr"))
+						chr = chr.substring(3);
                     String pos = items[1];
                     String rsId = items[2];
                     String ref = items[3];
                     String alt = items[4];
                     String genotype = items[9].split(":")[0].replaceAll("\\|", "\\/");
-                    // String ref = items[3];
-                    // String alt = items[4];
-
                     // Computing end position
                     String begin = pos;
                     String end = "NA";
                     int refLength = ref.length();
                     int altLength = alt.length();
-
                     if (refLength == altLength) {
                         end = begin;
                     } else if (refLength < altLength) {
@@ -175,7 +148,6 @@ public class Annotations {
                             Integer.parseInt(begin) + refLength - altLength);
                     }
                     String query = chr + ":" + begin + "-" + end;
-                    // System.out.println(query);
                     int curi = that.cur;
                     synchronized(this) {
                         while(that.busy[that.cur]) {
@@ -186,8 +158,8 @@ public class Annotations {
                         curi = that.cur;
                     }
 
-                    TabixReader tabix = that.tabixes[curi];
-                    TabixReader.Iterator iter = tabix.query(query);
+                    TabixReader tabix;
+                    TabixReader.Iterator iter;
                     String caddScore = ".";
                     String caddGene = ".";
                     String dannScore = ".";
@@ -195,22 +167,21 @@ public class Annotations {
                     String type = ".";
                     String s;
                     boolean found = false;
-                    while (iter != null && (s = iter.next()) != null) {
-                        String[] results = s.split("\t");
-                        if (results[2].equals(ref) && results[3].equals(alt)) {
-                            caddScore = results[6];
-                            gwavaScore = results[7];
-                            dannScore = results[8];
-                            caddGene = results[5];
-                            if (caddGene.startsWith("CCDS") && that.ccdsGenes.containsKey(caddGene)) {
-                                caddGene = that.ccdsGenes.get(caddGene);
-                            }
-                            type = results[4];
-                            found = true;
-                            break;
-                        }
-                    }
-
+					String key = chr + "_" + begin;
+					//check precomputed scores first
+					if (anno_data.containsKey(key)){
+						for (String a: anno_data.get(key)) {
+							String[] scores = a.split("_");
+							if (scores[0].equals(ref) && scores[1].equals(alt)) {
+								//write the values
+								caddGene = scores[2];
+								caddScore = scores[3];
+								gwavaScore = scores[4];
+								dannScore = scores[5];
+								found = true;
+							}
+						}
+					}
                     if (!found) {
                         tabix = that.caddTabixes[curi];
                         iter = tabix.query(query);
@@ -243,7 +214,7 @@ public class Annotations {
                         while (iter != null && (s = iter.next()) != null) {
                             String[] results = s.split("\t");
                             if (results[2].equals(ref) && results[3].equals(alt)) {
-                                dannScore = results[4];
+                                dannScore = results[4].replace("\\r","");
                             } else if (ref.length() != alt.length()) {
                                 maxScore = Math.max(maxScore, Double.parseDouble(results[4]));
                                 dannScore = Double.toString(maxScore);
@@ -278,9 +249,6 @@ public class Annotations {
         Arrays.parallelSetAll(data, annotation);
         for (String res: data) {
             String[] r = res.split("::");
-            /*if (!this.all && !r[1].equals(model)) {
-                continue;
-            }*/
             String gene = r[2];
             String simScore = ".";
             if (sims.containsKey(gene)) {
@@ -290,8 +258,9 @@ public class Annotations {
         }
         out.flush();
         out.close();
+
         return result;
 
-    }
+    } 
 
 }
