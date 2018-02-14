@@ -1,19 +1,20 @@
-# phenomenet-vp: A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data: Command Line Executable
+# DeepPVP: A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data: Command Line Executable
 
 ## Software and Hardware requirements
  - At least 32 GB RAM.
  - Any Unix-based operating system
  - Java 8 or above
+ - Python 2.7, with (Tensorflow, Keras, h5py, numpy, and pandas) libraries
  - At least 170GB free disk space to accommodate the necessary databases for annotation
 
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-1.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip)
- 2. Download the data files [phenomenet-vp-1.1-data.zip](http://bio2vec.net/pvp/data-v1.1.tar.gz)
- 3. Extract the distribution files `phenomenet-vp-1.1.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-1.1
- 5. cd `phenomenet-vp-1.1 `
+ 1. Download the distribution file [phenomenet-vp-2.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip)
+ 2. Download the data files [phenomenet-vp-2.0-data.zip](http://bio2vec.net/pvp/data-v2.0.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-2.0.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.0
+ 5. cd `phenomenet-vp-2.0 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
@@ -26,19 +27,37 @@
   
 
 ## Parameters
-    --file, -f
+    --digenic, -d
+       Rank digenic combinations
+       Default: false
+  * --file, -f
        Path to VCF file
-    --inh, -i
-       Mode of inheritance (dominant, recessive, x-linked, others, or unknown)
-       Default: unknown
-    --omim, -o
-       OMIM ID of the input VCF file
-    --phenotypes, -p
-       List of phenotype ids separated by commas (HPO or MPO terms)
+       Default: <empty string>
     --human, -h
-        Propagate human disease phenotypes to genes only    
+       Propagate human disease phenotypes to genes only
+       Default: false
+    --inh, -i
+       Mode of inheritance
+       Default: unknown
+    --json, -j
+       Path to PhenoTips JSON file containing phenotypes
+       Default: <empty string>
+    --omim, -o
+       OMIM ID
+       Default: <empty string>
+    --outfile, -of
+       Path to results file
+       Default: <empty string>
+    --phenotypes, -p
+       List of phenotype ids separated by commas
+       Default: <empty string>
     --sp, -s
-        Propagate mouse and fish disease phenotypes to genes only	
+       Propagate mouse and fish disease phenotypes to genes only
+       Default: false
+    --trigenic, -t
+       Rank trigenic combinations
+       Default: false
+	
 
 
 ## Usage:
@@ -69,19 +88,15 @@ c) Run **phenomenet-vp** on the output file *filtered.recode.vcf* generated from
  
 # Mendelian Synthetic Exomes
 
-Our prepared set of synthetic exomes are available [here](http://www.bio2vec.net/pvp/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic exome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
+Our prepared set of synthetic exomes filtered by MAF < 1% are available [here](http://www.bio2vec.net/pvp/deepPVP/clinvar/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `patho.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `patho.txt` is used to create `var_i.vcf` synthetic exome. 
 
-# Mendelian Synthetic Genomes
-
-Our prepared set of synthetic genomes are available [here](http://www.bio2vec.net/pvp/raw_genomes/). This directory contains VCF-format synthetic genomes. The file `clinvar_variants.txt` contains a list of pathogenic ClinVar variants used to create the synthetic genomes (with their OMIM IDs). The i-th variant in `clinvar_variants.txt` is used to create `var_i.vcf` synthetic genome. The subdirectory `wo_maf` contains unfiltered VCF files while `with_maf/` contains pre-filtered exomes based on MAF (i.e filter out variants with MAF > 1%).
-
-Results for the above sets of synetheic exomes and genomes can be found [here](http://www.bio2vec.net/pvp/exome_results/) and  [here](http://www.bio2vec.net/pvp/genome_results/). Please note that these results were obtained using PVP release version 1.0.
+Results files are available for [here](http://www.bio2vec.net/pvp/deepPVP/clinvar/) using DeepPVP, CADD, DANN, GWAVA, and Genomiser.
 
 # Digenic Synthetic Genomes
 
-Our prepared set of synthetic genomes are available for [di-allelic](http://www.bio2vec.net/pvp/dida/di_data) samples, and [tri-allelic](http://www.bio2vec.net/pvp/dida/tri_data) samples. This directory contains VCF-format synthetic genomes created by appending either di -allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_var1.txt` and `di_var2.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_var1.txt` and `di_var2.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_var1.txt`, `tri_var2.txt`, and `tri_var3.txt` list their respective tri-allelic variants.
+Our prepared set of synthetic genomes are available for [di-allelic](http://www.bio2vec.net/pvp/deepPVP/dida/raw_genomes/di) samples, and [tri-allelic](http://www.bio2vec.net/pvp/deepPVP/dida/raw_genomes/tri) samples. This directory contains VCF-format synthetic genomes created by appending either di-allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_vars.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_vars.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_vars.txt`list their respective tri-allelic variants.
 
-Results files are available for [di-allelic](http://www.bio2vec.net/pvp/dida/di_results) genomes, and [tri-allelic](http://www.bio2vec.net/pvp/dida/tri_results) genomes. We also provide a [summary table](http://www.bio2vec.net/pvp/dida-results/digenic-results.tsv) with an overview over all results. Please note that these results were obtained using PVP release version 1.1.
+Results files are available for [here](http://www.bio2vec.net/pvp/deepPVP/dida/) using DeepPVP, CADD, DANN, GWAVA, and Genomiser.
 
 # Contact
 
