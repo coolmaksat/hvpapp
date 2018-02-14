@@ -10,6 +10,10 @@ import com.beust.jcommander.ParameterException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sa.edu.kaust.exceptions.*;
+import org.json.*;
+import org.jgrapht.*;
+import org.jgrapht.graph.*;
+import org.jgrapht.alg.*;
 
 
 public class Main {
@@ -20,9 +24,12 @@ public class Main {
     PhenoSim phenoSim;
     Annotations annotations;
     Classification classification;
+	String mode = "3";
     Map<String, String> inhModes;
     Map<String, List<String> > disPhenos;
-
+	Map<String, List<String> > interactions;
+	UndirectedGraph<String, DefaultEdge> actions;
+	
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String inFile = "";
     @Parameter(names={"--outfile", "-of"}, description="Path to results file", required=false)
@@ -46,6 +53,18 @@ public class Main {
 
     @Parameter(names={"--sp", "-s"}, description="Propagate mouse and fish disease phenotypes to genes only")
     boolean mod = false;
+	
+	@Parameter(names={"--json", "-j"}, description="Path to PhenoTips JSON file containing phenotypes")
+    String jsonFile = "";
+	
+	//@Parameter(names={"--combination", "-c"}, description="Number of variant combinations to prioritize (between 1 and 10)")
+    //int combination = 1;
+	
+	@Parameter(names={"--digenic", "-d"}, description="Rank digenic combinations")
+    boolean digenic = false;
+	
+	@Parameter(names={"--trigenic", "-t"}, description="Rank trigenic combinations")
+    boolean trigenic = false;
 
     public Main() throws Exception {
         this.props = this.getProperties();
@@ -89,7 +108,35 @@ public class Main {
         }
     }
 
-
+	private void loadInteractions() throws Exception {
+        String filename = this.props.getProperty("interFile");
+        this.interactions = new HashMap<String, List<String> >();
+		//this.actions = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                if (line.equals("")) {
+                    continue;
+                }
+                String[] items = line.split("\t", -1);
+                String inter = items[0];
+                if (!this.interactions.containsKey(inter)) {
+                    this.interactions.put(inter, new ArrayList<String>());
+                }
+                List<String> actionSet = this.interactions.get(inter);
+                String action = items[1];
+                actionSet.add(action);
+            }
+        }
+		//add data into graph
+		/*for (String v:this.interactions.keySet()) {
+			this.actions.addVertex(v);
+		}
+		for (String v:this.interactions.keySet()) {
+			for (String w:this.interactions.get(v))
+				this.actions.addEdge(v, w);
+		}*/
+    }
     public Properties getProperties() throws Exception {
         if (this.props != null) {
             return this.props;
@@ -102,11 +149,6 @@ public class Main {
     }
 
     public void run() throws Exception {
-        // this.runAnnotations(args);
-        // this.runClassifications(args);
-        // this.runPhenotypes();
-        // this.sort();
-        // this.merge();
         this.runTool();
     }
 
@@ -118,6 +160,7 @@ public class Main {
                     throw new PhenotypeFormatException("Wrong phenotype format. Should be HP:XXXXXXX or MP:XXXXXXX");
                 }
                 this.phenotypes.add(pheno);
+				this.mode = "0"; //run as dominant mode
             }
         } else if (!this.omimId.equals("")){
             if (!this.omimId.matches("OMIM:\\d{6}")) {
@@ -131,6 +174,17 @@ public class Main {
             if (this.inh.equals("unknown") && this.inhModes.containsKey(this.omimId)) {
                 this.inh = this.inhModes.get(this.omimId);
             }
+		} else if (!this.jsonFile.equals("")){
+			//Load phenotypes from JSON file
+			String content = new String(Files.readAllBytes(Paths.get(jsonFile)));
+			JSONObject obj = new JSONObject(content.trim());
+			JSONArray arr = obj.getJSONArray("features");
+			for (int i = 0; i < arr.length(); i++){
+				String id = arr.getJSONObject(i).getString("id");
+				if (id.matches("HP:\\d{7}")) {
+					this.phenotypes.add(id);
+				}
+			}
         } else {
             // throw new Exception("Please provide phenotypes or OMIM ID");
         }
@@ -146,200 +200,50 @@ public class Main {
             log.info("Initializing the model");
             this.loadInhModes();
             this.loadDiseasePhenotypes();
+			this.loadInteractions();
             this.validateParameters();
             for (String pheno: this.phenotypes) {
                 System.out.println(pheno);
             }
             this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
             this.annotations = new Annotations(this.props);
-            this.classification = new Classification(this.props, this.human, this.mod);
-
+            this.classification = new Classification(this.props);
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
             Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
             log.info("Getting top level phenotypes");
             Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
-            log.info("Starting annotation");
-            this.inh = this.inh.toLowerCase();
-            String mode = "3";
-            if (this.inh.equals("dominant")) {
-                mode = "0";
-            } else if (this.inh.equals("recessive")) {
-                mode = "1";
-            } else if (this.inh.equals("x-linked")) {
-                mode = "2";
-            }
+			log.info("Starting annotation");
+			this.inh = this.inh.toLowerCase();
+			if (this.inh.equals("dominant")) {
+				this.mode = "0";
+			} else if (this.inh.equals("recessive")) {
+				this.mode = "1";
+			} else if (this.inh.equals("x-linked")) {
+				this.mode = "2";
+			}
             this.annotations.getAnnotations(
                 this.inFile, this.outFile, this.inh, this.model, sims);
-            this.classification.toArff(this.outFile, topPhenos, mode);
+			this.classification.toCSV(this.outFile, topPhenos, this.mode);
             this.classification.toolClassify(this.outFile);
+			if (digenic) {
+				List<String> genes = new ArrayList<String>();
+				genes.addAll(this.interactions.keySet());
+				this.classification.toolFilter(this.outFile, genes, 2);
+				this.classification.toolDigenic(this.outFile, this.interactions, 2);
+			}
+			if (trigenic) {
+				List<String> genes = new ArrayList<String>();
+				genes.addAll(this.interactions.keySet());
+				this.classification.toolFilter(this.outFile, genes, 3);
+				this.classification.toolTrigenic(this.outFile, this.interactions, 3);
+			}
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
         } catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             log.severe(sw.toString());
-        }
-    }
-
-    public void runPhenotypes() throws Exception {
-        this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
-
-        Set<String> phenotypes = new HashSet<String>();
-        phenotypes.add("HP:0010662");
-        phenotypes.add("HP:0002930");
-        phenotypes.add("HP:0008227");
-        phenotypes.add("HP:0008247");
-        phenotypes.add("HP:0000836");
-        phenotypes.add("HP:0000818");
-        phenotypes.add("HP:0000853");
-        phenotypes.add("HP:0003828");
-        phenotypes.add("HP:0001962");
-        phenotypes.add("HP:0001649");
-        phenotypes.add("HP:0011784");
-        phenotypes.add("HP:0003812");
-        phenotypes.add("MP:0001255");
-        phenotypes.add("MP:0001253");
-        phenotypes.add("MP:0005605");
-        phenotypes.add("MP:0005422");
-        phenotypes.add("HP:0002750");
-        phenotypes.add("HP:0200000");
-        phenotypes.add("HP:0010514");
-        phenotypes.add("HP:0011344");
-        phenotypes.add("HP:0001263");
-        phenotypes.add("HP:0002342");
-        Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
-        for (String gene: sims.keySet()) {
-            System.out.println(gene + "\t" + sims.get(gene));
-        }
-        Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
-        System.out.println(topPhenos.size());
-        for (String pheno: topPhenos) {
-            System.out.println(pheno);
-        }
-
-    }
-
-    public void runClassifications(String[] args) throws Exception {
-        this.classification = new Classification(this.props, this.human, this.mod);
-
-        if (args.length == 0) {
-            throw new Exception("Please provide command name");
-        }
-        System.out.println("Running command " + args[0]);
-        if (args[0].equals("toArffAll")) {
-            this.classification.toArffAll();
-        } else if (args[0].equals("classifyAll")) {
-            this.classification.classifyAll();
-        } else if (args[0].equals("sortAll")) {
-            this.classification.sortAll();
-        } else if (args[0].equals("classify")) {
-            if (args.length != 2) {
-                throw new Exception("Please provide arff file index");
-            }
-            int ind = Integer.parseInt(args[1]);
-            this.classification.classify(ind);
-        } else if (args[0].equals("classifyFiles")) {
-            if (args.length != 2) {
-                throw new Exception("Please provide arff file index");
-            }
-            int ind = Integer.parseInt(args[1]);
-            this.classification.classifyFiles(ind);
-        }
-    }
-
-
-    public void runAnnotations(String[] args) throws Exception {
-        this.annotations = new Annotations(this.props);
-
-        String root = args[0];
-        File rootDir = new File(root);
-        String[] files = rootDir.list(new FilenameFilter(){
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".vcf");
-            }
-        });
-        // List<String> files = new ArrayList<String>();
-        // try (BufferedReader br = Files.newBufferedReader(Paths.get("data/maxat.txt"))) {
-        //     String line = null;
-        //     while((line = br.readLine()) != null) {
-        //         files.add(line + ".vcf");
-        //     }
-        // }
-
-        int id = Integer.parseInt(args[1]);
-        if (!root.endsWith("/")) {
-            root = root + "/";
-        }
-        // this.annotations.getAnnotations(root + files[id], this.mode, this.model);
-    }
-
-    public void sort() throws Exception {
-        List<WGS> list = new ArrayList<WGS>();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/db/wgs.txt"))) {
-            String line;
-            while((line = br.readLine()) != null) {
-                String[] items = line.split("\t");
-                int chr = 0;
-                if (Character.isDigit(items[0].charAt(0))) {
-                    chr = Integer.parseInt(items[0]);
-                } else {
-                    chr = (int)items[0].charAt(0);
-                }
-                int pos = Integer.parseInt(items[1]);
-                list.add(new WGS(chr, pos, line));
-            }
-        }
-        Collections.sort(list);
-        PrintWriter out = new PrintWriter("data/db/db.txt");
-        for (WGS wgs: list) {
-            out.println(wgs.line);
-        }
-        out.flush();
-        out.close();
-    }
-
-    public void merge() throws Exception {
-        PrintWriter out = new PrintWriter("data/db/wes.txt");
-        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/db/wes.vcf"))) {
-            String line;
-            while((line = br.readLine()) != null) {
-                String[] items = line.split("\t");
-                StringBuilder sb = new StringBuilder(items[0]);
-                for (int i = 1; i < 4; i++) {
-                    sb.append("\t");
-                    sb.append(items[i]);
-                }
-                sb.append("\t");
-                sb.append("Coding");
-                for (int i = 4; i < items.length; i++) {
-                    sb.append("\t");
-                    sb.append(items[i]);
-                }
-                out.println(sb.toString());
-            }
-        }
-        out.flush();
-        out.close();
-    }
-
-    class WGS implements Comparable<WGS> {
-        String line;
-        int chr;
-        int pos;
-
-        public WGS(int chr, int pos, String line) {
-            this.chr = chr;
-            this.pos = pos;
-            this.line = line;
-        }
-
-        public int compareTo(WGS o) {
-            int c = Integer.compare(this.chr, o.chr);
-            if (c == 0)
-                return Integer.compare(this.pos, o.pos);
-            return c;
         }
     }
 
