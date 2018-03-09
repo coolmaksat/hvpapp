@@ -27,10 +27,7 @@
   
 
 ## Parameters
-    --digenic, -d
-       Rank digenic combinations
-       Default: false
-  * --file, -f
+    --file, -f
        Path to VCF file
        Default: <empty string>
     --human, -h
@@ -53,11 +50,7 @@
        Default: <empty string>
     --sp, -s
        Propagate mouse and fish disease phenotypes to genes only
-       Default: false
-    --trigenic, -t
-       Rank trigenic combinations
-       Default: false
-	
+       Default: false	
 
 
 ## Usage:
