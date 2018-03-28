@@ -126,8 +126,9 @@ public class Classification {
                  vars.add(line);
             }
 			br.close();
-		//process combinations
 		List<DataResult> data = new ArrayList<DataResult>();
+		List<Double> dataScores = new ArrayList<Double>();
+		//process combinations
 		for(int i=0; i < vars.size(); i++){
 			double combined_score = 0.0;
 			String[] set1 = vars.get(i).split("\t", -1);
@@ -155,8 +156,20 @@ public class Classification {
 				if ((interactions.get(first_gene).contains(second_gene))){
 					combined_score = first_pred + second_pred;
 					s = first_var + "\t" + second_var;
-					DataResult mydata = new DataResult(s, combined_score);
-					data.add(mydata);
+					if (data.size() < topCount) { 
+						DataResult mydata = new DataResult(s, combined_score);
+						data.add(mydata);
+						dataScores.add(combined_score);
+					}
+					else { 
+						double minVal = Collections.min(dataScores);
+						if ( minVal < combined_score ) {
+							int minIndex = dataScores.indexOf(minVal);
+							DataResult mydata = new DataResult(s, combined_score);
+							data.set(minIndex, mydata);
+							dataScores.set(minIndex,combined_score); 
+						}
+					}
 				}
 			}
 		}
