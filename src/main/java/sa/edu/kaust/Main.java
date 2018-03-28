@@ -57,14 +57,14 @@ public class Main {
 	@Parameter(names={"--json", "-j"}, description="Path to PhenoTips JSON file containing phenotypes")
     String jsonFile = "";
 	
-	//@Parameter(names={"--combination", "-c"}, description="Number of variant combinations to prioritize (between 1 and 10)")
-    //int combination = 1;
-	
 	@Parameter(names={"--digenic", "-d"}, description="Rank digenic combinations")
     boolean digenic = false;
 	
 	@Parameter(names={"--trigenic", "-t"}, description="Rank trigenic combinations")
     boolean trigenic = false;
+	
+	@Parameter(names={"--combination", "-c"}, description="Maximum Number of variant combinations to prioritize (for digenic and trigenic cases only)")
+    int c = 1000;
 
     public Main() throws Exception {
         this.props = this.getProperties();
@@ -230,13 +230,13 @@ public class Main {
 				List<String> genes = new ArrayList<String>();
 				genes.addAll(this.interactions.keySet());
 				this.classification.toolFilter(this.outFile, genes, 2);
-				this.classification.toolDigenic(this.outFile, this.interactions, 2);
+				this.classification.toolDigenic(this.outFile, this.interactions, 2, c);
 			}
 			if (trigenic) {
 				List<String> genes = new ArrayList<String>();
 				genes.addAll(this.interactions.keySet());
 				this.classification.toolFilter(this.outFile, genes, 3);
-				this.classification.toolTrigenic(this.outFile, this.interactions, 3);
+				this.classification.toolTrigenicOpt(this.outFile, this.interactions, 3, c);
 			}
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
