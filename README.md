@@ -100,7 +100,7 @@ Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, et al. (2017)
 
 # License
 <pre>
-Copyright (c) 2016, King Abdullah University of Science and Technology
+Copyright (c) 2016-2018, King Abdullah University of Science and Technology
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
