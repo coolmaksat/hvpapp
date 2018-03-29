@@ -1,4 +1,5 @@
-# DeepPVP: A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data: Command Line Executable
+# PhenomeNet Variant Prioritizer (PVP) 
+A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data
 
 ## Software and Hardware requirements
  - At least 32 GB RAM.
@@ -6,7 +7,6 @@
  - Java 8 or above
  - Python 2.7, with (Tensorflow, Keras, h5py, numpy, and pandas) libraries
  - At least 170GB free disk space to accommodate the necessary databases for annotation
-
  
 ## Installation 
     
@@ -25,33 +25,36 @@
   5. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`.
   6. Rename the above two files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
   
-
 ## Parameters
     --file, -f
        Path to VCF file
-       Default: <empty string>
-    --human, -h
-       Propagate human disease phenotypes to genes only
-       Default: false
+    --outfile, -of
+       Path to results file
     --inh, -i
        Mode of inheritance
        Default: unknown
     --json, -j
        Path to PhenoTips JSON file containing phenotypes
-       Default: <empty string>
     --omim, -o
        OMIM ID
-       Default: <empty string>
-    --outfile, -of
-       Path to results file
-       Default: <empty string>
     --phenotypes, -p
        List of phenotype ids separated by commas
-       Default: <empty string>
+    --human, -h
+       Propagate human disease phenotypes to genes only
+       Default: false
     --sp, -s
        Propagate mouse and fish disease phenotypes to genes only
-       Default: false	
-
+       Default: false
+    --digenic, -d
+       Rank digenic combinations
+       Default: false
+    --trigenic, -t
+       Rank trigenic combinations
+       Default: false
+    --combination, -c
+       Maximum Number of variant combinations to prioritize (for digenic and
+       trigenic cases only)
+       Default: 1000
 
 ## Usage:
 
@@ -77,19 +80,20 @@ b) Run the following command using VCFtools on your input VCF file *to filter ou
 
 	vcftools --vcf input_file.vcf --recode --max-maf 0.01 --out filtered
 	
-c) Run **phenomenet-vp** on the output file *filtered.recode.vcf* generated from the command above.
+c) Run **PVP** on the output file *filtered.recode.vcf* generated from the command above.
  
-# Mendelian Synthetic Exomes
+# PVP 1.0
 
-Our prepared set of synthetic exomes filtered by MAF < 1% are available [here](http://www.bio2vec.net/pvp/deepPVP/clinvar/raw_exomes/). This directory contains VCF-format synthetic exomes. The file `patho.txt` contains a list of pathogenic ClinVar variants used to create the synthetic exomes (with their OMIM IDs). The i-th variant in `patho.txt` is used to create `var_i.vcf` synthetic exome. 
+The original random-forest-based PVP tool is available to download [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.0/phenomenet-vp-1.0.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v1.0.tar.gz). The prepared set of exomes and genomes used for the analysis and results are provided [here](http://bio2vec.net/pvp/pvp-1.0/). 
 
-Results files are available for [here](http://www.bio2vec.net/pvp/deepPVP/clinvar/) using DeepPVP, CADD, DANN, GWAVA, and Genomiser.
+# DeepPVP
 
-# Digenic Synthetic Genomes
+The updated neural-network model, DeepPVP is available to download [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v2.0.tar.gz). The prepared set of exomes used for the analysis and comparative results are provided [here](http://bio2vec.net/pvp/deepPVP/clinvar/). The comparison with PVP is based on PVP-1.1 available [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v1.1.tar.gz).
 
-Our prepared set of synthetic genomes are available for [di-allelic](http://www.bio2vec.net/pvp/deepPVP/dida/raw_genomes/di) samples, and [tri-allelic](http://www.bio2vec.net/pvp/deepPVP/dida/raw_genomes/tri) samples. This directory contains VCF-format synthetic genomes created by appending either di-allelic or tri-allelic variants from the DIgenic diseases DAtabase (DIDA). The files `di_vars.txt` list the variants used to create the synthetic genomes for di-alellic samples. The i-th variants in `di_vars.txt` are used to create `var_i.vcf` synthetic genome in di-allelic samples. Similarly, for the tri-allelic samples,  the files `tri_vars.txt`list their respective tri-allelic variants.
+# OligoPVP
 
-Results files are available for [here](http://www.bio2vec.net/pvp/deepPVP/dida/) using DeepPVP, CADD, DANN, GWAVA, and Genomiser.
+OligoPVP is provided as part of DeepPVP tool using the parameters --digenic and --trigenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparitive results with other methods are also provided.
+
 
 # Contact
 
@@ -111,7 +115,7 @@ modification, are permitted provided that the following conditions are met:
    notice, this list of conditions and the following disclaimer in the
    documentation and/or other materials provided with the distribution.
 3. All advertising materials mentioning features or use of this software
-   must display the following acknowledgement:
+   must display the following acknowledgment:
    This product includes software developed by the King Abdullah University
    of Science and Technology.
 4. Neither the name of the King Abdullah University of Science and Technology
