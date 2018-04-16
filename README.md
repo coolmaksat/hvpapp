@@ -95,7 +95,9 @@ The updated neural-network model, DeepPVP is available to download [here](https:
 OligoPVP is provided as part of DeepPVP tool using the parameters --digenic and --trigenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparitive results with other methods are also provided.
 
 
-# Contact
+# People
+
+PVP is jointly developed by researchers at the University of Birmingham ([Prof George Gkoutos](https://www.birmingham.ac.uk/staff/profiles/cancer-genomic/gkoutos-georgios.aspx) and his team), University of Cambridge ([Dr Paul Schofield](https://www.pdn.cam.ac.uk/directory/paul-schofield) and his team), and King Abdullah University of Science and Technology ([Prof Vladimir Bajic](https://www.kaust.edu.sa/en/study/faculty/vladimir-bajic), [Robert Hoehndorf](https://borg.kaust.edu.sa/), and teams). 
 
 # Publications
 
