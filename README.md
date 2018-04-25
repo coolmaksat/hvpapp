@@ -5,7 +5,7 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
  - At least 32 GB RAM.
  - Any Unix-based operating system
  - Java 8 or above
- - Python 2.7, with (Tensorflow, Keras, h5py, numpy, and pandas) libraries
+ - Python 2.7, with (Tensorflow(1.3.0), Keras(2.0.7), h5py(2.7), numpy, scipy, yaml, pyyaml, and pandas(0.20.3)) libraries
  - At least 170GB free disk space to accommodate the necessary databases for annotation
  
 ## Installation 
