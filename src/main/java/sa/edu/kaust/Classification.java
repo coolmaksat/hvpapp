@@ -17,11 +17,12 @@ public class Classification {
 	public Map<String, List<String> > actions;
 	List<String> genes;
 	public Map<String, List<String> > geneVars;
+	String myPath;
 
-
-    public Classification(Properties props) throws Exception {
+    public Classification(Properties props, String path) throws Exception {
         // Loading the saved classifier
-        this.modelFile = props.getProperty("model");
+		this.myPath = path;
+        this.modelFile = this.myPath+props.getProperty("model");
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
 
@@ -34,7 +35,7 @@ public class Classification {
 		String param2 = this.modelFile;
 		String line = null;
 		String pythonScript;
-		pythonScript = "data/score.py";
+		pythonScript = this.myPath+"data/score.py";
 		try {
 		ProcessBuilder pb = new ProcessBuilder("python",pythonScript,""+param1,""+param2);
 		Process p = pb.start();
@@ -45,9 +46,7 @@ public class Classification {
 			x++;
 		}
 		int val = p.waitFor();
-		p.getInputStream().close();
-		p.getOutputStream().close();
-		p.getErrorStream().close();
+
 		if (val == 0) {
 			System.out.println("Finished Annotation");
 			DataResult[] data = new DataResult[results.length];
@@ -71,8 +70,17 @@ public class Classification {
 			out.flush();
 			out.close();
 		}
-		else
-			System.out.println("Error in annotation!");
+		else {
+            System.out.println("Error in annotation! Return signal is: " + val);
+            System.out.println("STDERR is:");
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            while ((line = input.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+		p.getInputStream().close();
+		p.getOutputStream().close();
+		p.getErrorStream().close();
 		} catch (Exception e) {
 			e.printStackTrace();
     }
