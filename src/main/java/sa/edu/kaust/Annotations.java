@@ -23,23 +23,25 @@ public class Annotations {
     Map<String, String> ccdsGenes;
     boolean all = false;
 	String dataFile;
+	String myPath;
 
-    public Annotations(Properties props) throws Exception {
+    public Annotations(Properties props, String path) throws Exception {
         this.props = props;
+		this.myPath = path;
         this.tabixN = 50;
         this.caddTabixes = new TabixReader[this.tabixN];
         this.dannTabixes = new TabixReader[this.tabixN];
         this.gwavaTabixes = new TabixReader[this.tabixN];
-		this.dataFile = props.getProperty("annoPath");
+		this.dataFile = this.myPath+props.getProperty("annoPath");
         this.busy = new boolean[this.tabixN];
         for (int i = 0; i < this.tabixN; i++) {
-            this.caddTabixes[i] = new TabixReader(this.props.getProperty("caddPath"));
-            this.dannTabixes[i] = new TabixReader(this.props.getProperty("dannPath"));
-            this.gwavaTabixes[i] = new TabixReader(this.props.getProperty("gwavaPath"));
+            this.caddTabixes[i] = new TabixReader(this.myPath+this.props.getProperty("caddPath"));
+            this.dannTabixes[i] = new TabixReader(this.myPath+this.props.getProperty("dannPath"));
+            this.gwavaTabixes[i] = new TabixReader(this.myPath+this.props.getProperty("gwavaPath"));
         }
 
         this.ccdsGenes = new HashMap<String, String>();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get("data/ccds_gene.txt"))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+"data/ccds_gene.txt"))) {
             String line;
             while((line = br.readLine()) != null) {
                 String[] items = line.split("\t", -1);
@@ -214,7 +216,7 @@ public class Annotations {
                         while (iter != null && (s = iter.next()) != null) {
                             String[] results = s.split("\t");
                             if (results[2].equals(ref) && results[3].equals(alt)) {
-                                dannScore = results[4].replace("\\r","");
+                                dannScore = results[4].replace("\r","");
                             } else if (ref.length() != alt.length()) {
                                 maxScore = Math.max(maxScore, Double.parseDouble(results[4]));
                                 dannScore = Double.toString(maxScore);
