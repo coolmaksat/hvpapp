@@ -29,7 +29,8 @@ public class Main {
     Map<String, List<String> > disPhenos;
 	Map<String, List<String> > interactions;
 	UndirectedGraph<String, DefaultEdge> actions;
-	
+	String myPath;
+
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String inFile = "";
     @Parameter(names={"--outfile", "-of"}, description="Path to results file", required=false)
@@ -73,7 +74,7 @@ public class Main {
     private void loadInhModes() throws Exception {
         String fileName = this.props.getProperty("inhModesFile");
         this.inhModes = new HashMap<String, String>();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+fileName))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -90,7 +91,7 @@ public class Main {
     private void loadDiseasePhenotypes() throws Exception {
         String filename = this.props.getProperty("disPhenoFile");
         this.disPhenos = new HashMap<String, List<String> >();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+filename))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -111,8 +112,7 @@ public class Main {
 	private void loadInteractions() throws Exception {
         String filename = this.props.getProperty("interFile");
         this.interactions = new HashMap<String, List<String> >();
-		//this.actions = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+filename))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -128,14 +128,6 @@ public class Main {
                 actionSet.add(action);
             }
         }
-		//add data into graph
-		/*for (String v:this.interactions.keySet()) {
-			this.actions.addVertex(v);
-		}
-		for (String v:this.interactions.keySet()) {
-			for (String w:this.interactions.get(v))
-				this.actions.addEdge(v, w);
-		}*/
     }
     public Properties getProperties() throws Exception {
         if (this.props != null) {
@@ -176,7 +168,7 @@ public class Main {
             }
 		} else if (!this.jsonFile.equals("")){
 			//Load phenotypes from JSON file
-			String content = new String(Files.readAllBytes(Paths.get(jsonFile)));
+			String content = new String(Files.readAllBytes(Paths.get(this.myPath+jsonFile)));
 			JSONObject obj = new JSONObject(content.trim());
 			JSONArray arr = obj.getJSONArray("features");
 			for (int i = 0; i < arr.length(); i++){
@@ -198,6 +190,8 @@ public class Main {
     public void runTool() {
         try {
             log.info("Initializing the model");
+			String libPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			this.myPath = libPath.substring(0,libPath.lastIndexOf("/")-3);
             this.loadInhModes();
             this.loadDiseasePhenotypes();
 			this.loadInteractions();
@@ -205,9 +199,9 @@ public class Main {
             for (String pheno: this.phenotypes) {
                 System.out.println(pheno);
             }
-            this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
-            this.annotations = new Annotations(this.props);
-            this.classification = new Classification(this.props);
+            this.phenoSim = new PhenoSim(this.props, this.human, this.mod, this.myPath);
+            this.annotations = new Annotations(this.props, this.myPath);
+            this.classification = new Classification(this.props, this.myPath);
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
             Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
