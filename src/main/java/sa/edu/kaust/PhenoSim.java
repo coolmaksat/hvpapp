@@ -37,12 +37,13 @@ public class PhenoSim {
     boolean mod;
     Properties props;
     Map<String, Set<String> > topPhenos;
+	String myPath;
 
-
-    public PhenoSim(Properties props, boolean human, boolean model) throws Exception {
+    public PhenoSim(Properties props, boolean human, boolean model, String path) throws Exception {
         this.props = props;
         this.h = human;
         this.mod = model;
+		this.myPath = path;
         System.setProperty("jdk.xml.entityExpansionLimit", "0");
         System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
         this.initEngine();
@@ -57,7 +58,7 @@ public class PhenoSim {
         this.uriFactory.loadNamespacePrefix("HP", graphURI.toString());
         this.graph = new GraphMemory(graphURI);
 
-        String aOntology = this.props.getProperty("aOntology");
+        String aOntology = this.myPath+this.props.getProperty("aOntology");
         GDataConf graphconf = new GDataConf(
             GFormat.RDF_XML, aOntology);
         GraphLoaderGeneric.populate(graphconf, this.graph);
@@ -75,11 +76,11 @@ public class PhenoSim {
         //println graph.getE()
         String modelPhenoFile;
         if (this.h)
-            modelPhenoFile = this.props.getProperty("modelPhenoFile_human");
+            modelPhenoFile = this.myPath+this.props.getProperty("modelPhenoFile_human");
         else if (this.mod)
-            modelPhenoFile = this.props.getProperty("modelPhenoFile_mod");
+            modelPhenoFile = this.myPath+this.props.getProperty("modelPhenoFile_mod");
         else
-            modelPhenoFile = this.props.getProperty("modelPhenoFile");
+            modelPhenoFile = this.myPath+this.props.getProperty("modelPhenoFile");
         try(BufferedReader br = Files.newBufferedReader(Paths.get(modelPhenoFile))) {
             String line;
             while((line = br.readLine()) != null) {
@@ -112,7 +113,7 @@ public class PhenoSim {
     private void loadTopLevelPhenotypes() throws Exception {
         String filename = this.props.getProperty("topLevelPhenoFile");
         this.topPhenos = new HashMap<String, Set<String> >();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+filename))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
