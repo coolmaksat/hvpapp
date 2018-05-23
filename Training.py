@@ -71,8 +71,7 @@ def Train_DNN(modelname, train_file):
     
     
 # Train Model
-#Train_DNN("model.hdf5", "PVP_feature.csv")    
-Train_DNN("model.hdf5", "PVP_feature.csv")
+Train_DNN("model.hdf5", "PVP_features.csv")
 
 print("Training Complete!!!")
 
