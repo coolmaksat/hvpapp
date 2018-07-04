@@ -70,7 +70,7 @@ public class Main {
 	@Parameter(names={"--combination", "-c"}, description="Maximum Number of variant combinations to prioritize (for digenic and trigenic cases only)")
     int c = 1000;
 	
-	@Parameter(names={"--ngenes", "-n"}, description="Number of genes in oligogenic combinations (more than three")
+	@Parameter(names={"--ngenes", "-n"}, description="Number of genes in oligogenic combinations (more than three)")
     int n = 4;
 
     public Main() throws Exception {
