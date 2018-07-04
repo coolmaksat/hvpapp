@@ -64,7 +64,7 @@ public class Main {
 	@Parameter(names={"--trigenic", "-t"}, description="Rank trigenic combinations")
     boolean trigenic = false;
 	
-	@Parameter(names={"--oligogenic", "-og"}, description="Rank trigenic combinations")
+	@Parameter(names={"--oligogenic", "-og"}, description="Rank oligogenic combinations")
     boolean oligogenic = false;
 	
 	@Parameter(names={"--combination", "-c"}, description="Maximum Number of variant combinations to prioritize (for digenic and trigenic cases only)")
