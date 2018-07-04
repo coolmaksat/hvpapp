@@ -59,7 +59,7 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
        Number of genes in oligogenic combinations (more than three)
        Default: 4
     --oligogenic, -og
-       Rank trigenic combinations
+       Rank oligogenic combinations
        Default: false
 
 
