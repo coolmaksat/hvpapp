@@ -28,9 +28,9 @@ public class Main {
     Map<String, String> inhModes;
     Map<String, List<String> > disPhenos;
 	Map<String, List<String> > interactions;
-	UndirectedGraph<String, DefaultEdge> actions;
+	Pseudograph<String, DefaultEdge> actionsP;
 	String myPath;
-
+	
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String inFile = "";
     @Parameter(names={"--outfile", "-of"}, description="Path to results file", required=false)
@@ -64,8 +64,14 @@ public class Main {
 	@Parameter(names={"--trigenic", "-t"}, description="Rank trigenic combinations")
     boolean trigenic = false;
 	
+	@Parameter(names={"--oligogenic", "-og"}, description="Rank trigenic combinations")
+    boolean oligogenic = false;
+	
 	@Parameter(names={"--combination", "-c"}, description="Maximum Number of variant combinations to prioritize (for digenic and trigenic cases only)")
     int c = 1000;
+	
+	@Parameter(names={"--ngenes", "-n"}, description="Number of genes in oligogenic combinations (more than three")
+    int n = 4;
 
     public Main() throws Exception {
         this.props = this.getProperties();
@@ -91,7 +97,7 @@ public class Main {
     private void loadDiseasePhenotypes() throws Exception {
         String filename = this.props.getProperty("disPhenoFile");
         this.disPhenos = new HashMap<String, List<String> >();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+filename))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -112,7 +118,8 @@ public class Main {
 	private void loadInteractions() throws Exception {
         String filename = this.props.getProperty("interFile");
         this.interactions = new HashMap<String, List<String> >();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+filename))) {
+		this.actionsP = new Pseudograph<String, DefaultEdge>(DefaultEdge.class);
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -128,6 +135,15 @@ public class Main {
                 actionSet.add(action);
             }
         }
+		//add data into graph
+		for (String v:this.interactions.keySet()) {
+			this.actionsP.addVertex(v);
+		}
+		for (String v:this.interactions.keySet()) {
+			for (String w:this.interactions.get(v)) {
+				this.actionsP.addEdge(v, w);
+			}
+		}
     }
     public Properties getProperties() throws Exception {
         if (this.props != null) {
@@ -168,7 +184,7 @@ public class Main {
             }
 		} else if (!this.jsonFile.equals("")){
 			//Load phenotypes from JSON file
-			String content = new String(Files.readAllBytes(Paths.get(this.myPath+jsonFile)));
+			String content = new String(Files.readAllBytes(Paths.get(jsonFile)));
 			JSONObject obj = new JSONObject(content.trim());
 			JSONArray arr = obj.getJSONArray("features");
 			for (int i = 0; i < arr.length(); i++){
@@ -192,6 +208,7 @@ public class Main {
             log.info("Initializing the model");
 			String libPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			this.myPath = libPath.substring(0,libPath.lastIndexOf("/")-3);
+			System.out.println(myPath);
             this.loadInhModes();
             this.loadDiseasePhenotypes();
 			this.loadInteractions();
@@ -199,9 +216,9 @@ public class Main {
             for (String pheno: this.phenotypes) {
                 System.out.println(pheno);
             }
-            this.phenoSim = new PhenoSim(this.props, this.human, this.mod, this.myPath);
-            this.annotations = new Annotations(this.props, this.myPath);
-            this.classification = new Classification(this.props, this.myPath);
+            this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
+            this.annotations = new Annotations(this.props);
+            this.classification = new Classification(this.props);
             log.info("Computing similarities");
             Set<String> phenotypes = new HashSet<String>(this.phenotypes);
             Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
@@ -231,6 +248,12 @@ public class Main {
 				genes.addAll(this.interactions.keySet());
 				this.classification.toolFilter(this.outFile, genes, 3);
 				this.classification.toolTrigenicOpt(this.outFile, this.interactions, 3, c);
+			}
+			if (oligogenic) {
+				List<String> genes = new ArrayList<String>();
+				genes.addAll(this.interactions.keySet());
+				this.classification.toolFilter(this.outFile, genes, 4);
+				this.classification.toolCombine(this.outFile, this.actionsP, this.n);
 			}
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
