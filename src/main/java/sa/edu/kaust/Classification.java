@@ -17,12 +17,11 @@ public class Classification {
 	public Map<String, List<String> > actions;
 	List<String> genes;
 	public Map<String, List<String> > geneVars;
-	String myPath;
 
-    public Classification(Properties props, String path) throws Exception {
+
+    public Classification(Properties props) throws Exception {
         // Loading the saved classifier
-		this.myPath = path;
-        this.modelFile = this.myPath+props.getProperty("model");
+        this.modelFile = props.getProperty("model");
         this.topLevelPhenotypes = props.getProperty("topLevelPhenotypes").split(", ");
     }
 
@@ -35,7 +34,7 @@ public class Classification {
 		String param2 = this.modelFile;
 		String line = null;
 		String pythonScript;
-		pythonScript = this.myPath+"data/score.py";
+		pythonScript = "data/score.py";
 		try {
 		ProcessBuilder pb = new ProcessBuilder("python",pythonScript,""+param1,""+param2);
 		Process p = pb.start();
@@ -46,7 +45,9 @@ public class Classification {
 			x++;
 		}
 		int val = p.waitFor();
-
+		p.getInputStream().close();
+		p.getOutputStream().close();
+		p.getErrorStream().close();
 		if (val == 0) {
 			System.out.println("Finished Annotation");
 			DataResult[] data = new DataResult[results.length];
@@ -70,17 +71,8 @@ public class Classification {
 			out.flush();
 			out.close();
 		}
-		else {
-            System.out.println("Error in annotation! Return signal is: " + val);
-            System.out.println("STDERR is:");
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            while ((line = input.readLine()) != null) {
-                System.out.println(line);
-            }
-        }
-		p.getInputStream().close();
-		p.getOutputStream().close();
-		p.getErrorStream().close();
+		else
+			System.out.println("Error in annotation!");
 		} catch (Exception e) {
 			e.printStackTrace();
     }
@@ -498,8 +490,8 @@ public class Classification {
         out.close();
 		}
 }
-	public void toolCombine(String fileName, UndirectedGraph<String, DefaultEdge> actions, int param) throws Exception {
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".digenic"), 1073741824));
+	public void toolCombine(String fileName, Pseudograph<String, DefaultEdge> actions, int param) throws Exception {
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName + ".oligogenic"), 1073741824));
 		for (int i = 1; i<=param; i++) {
 		out.print("Chr"+i+"\tStart"+i+"\tRef"+i+"\tAlt"+i+"\tGT"+i+"\tGene"+i+"\tCADD\tSim_Score\tPrediction_Score"+i+"\t");
 		}
