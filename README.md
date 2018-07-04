@@ -55,6 +55,13 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
        Maximum Number of variant combinations to prioritize (for digenic and
        trigenic cases only)
        Default: 1000
+     --ngenes, -n
+       Number of genes in oligogenic combinations (more than three)
+       Default: 4
+    --oligogenic, -og
+       Rank trigenic combinations
+       Default: false
+
 
 ## Usage:
 
