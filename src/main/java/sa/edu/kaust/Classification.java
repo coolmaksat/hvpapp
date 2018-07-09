@@ -206,7 +206,7 @@ public class Classification {
 		List<DataResult> data = new ArrayList<DataResult>();
 		List<Double> dataScores = new ArrayList<Double>();
 		for(int i=0; i < vars.size(); i++){
-			System.out.println(i);
+			//System.out.println(i);
 			double combined_score = 0.0;
 			String[] set1 = vars.get(i).split("\t", -1);
 			String first_var = "";
