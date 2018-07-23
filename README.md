@@ -10,11 +10,11 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
  
 ## Installation 
     
- 1. Download the distribution file [phenomenet-vp-2.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip)
- 2. Download the data files [phenomenet-vp-2.0-data.zip](http://bio2vec.net/pvp/data-v2.0.tar.gz)
- 3. Extract the distribution files `phenomenet-vp-2.0.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.0
- 5. cd `phenomenet-vp-2.0 `
+ 1. Download the distribution file [phenomenet-vp-2.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.1.zip)
+ 2. Download the data files [phenomenet-vp-2.1-data.zip](http://bio2vec.net/pvp/data-v2.1.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-2.1.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.1
+ 5. cd `phenomenet-vp-2.1 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
 ## Database requirements 
@@ -95,11 +95,11 @@ The original random-forest-based PVP tool is available to download [here](https:
 
 # DeepPVP
 
-The updated neural-network model, DeepPVP is available to download [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v2.0.tar.gz). The prepared set of exomes used for the analysis and comparative results are provided [here](http://bio2vec.net/pvp/deepPVP/clinvar/). The comparison with PVP is based on PVP-1.1 available [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v1.1.tar.gz).
+The updated neural-network model, DeepPVP is available to download [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.1.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v2.1.tar.gz). The prepared set of exomes used for the analysis and comparative results are provided [here](http://bio2vec.net/pvp/deepPVP/clinvar/). The comparison with PVP is based on PVP-1.1 available [here](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v1.1/phenomenet-vp-1.1.zip) along with its required data files [here](http://bio2vec.net/pvp/data-v1.1.tar.gz).
 
 # OligoPVP
 
-OligoPVP is provided as part of DeepPVP tool using the parameters --digenic and --trigenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparitive results with other methods are also provided.
+OligoPVP is provided as part of DeepPVP tool using the parameters --digenic and --trigenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparitive results with other methods are also provided. Results are obtained using DeepPVP v2.0.
 
 
 # People
