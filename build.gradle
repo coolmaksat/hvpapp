@@ -23,7 +23,7 @@ dependencies {
 }
 
 sourceCompatibility = 1.8
-version = '2.0'
+version = '2.1'
 jar {
     manifest {
         attributes 'Implementation-Title': 'HVPapp',
