@@ -1,0 +1,75 @@
+Best performing model chosen hyper-parameters for Fold 1 sub_fold 1
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 1 sub_fold 2
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 1 sub_fold 3
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 1 sub_fold 4
+{'Dense_3': 201, 'Dense_2': 67, 'Dense_1': 256, 'Dense': 128, 'Dense_6': 67, 'Dense_5': 67, 'layers': 'three', 'Dense_4': 67, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 1 sub_fold 5
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 2 sub_fold 1
+{'Dense_3': 134, 'Dense_2': 512, 'Dense_1': 512, 'Dense': 201, 'Dense_6': 67, 'Dense_5': 64, 'layers': 'four', 'Dense_4': 67, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 2 sub_fold 2
+{'Dense_3': 201, 'Dense_2': 134, 'Dense_1': 256, 'Dense': 201, 'Dense_6': 32, 'Dense_5': 201, 'layers': 'three', 'Dense_4': 32, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 2 sub_fold 3
+{'Dense_3': 67, 'Dense_2': 32, 'Dense_1': 128, 'Dense': 32, 'Dense_6': 67, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 134, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 2 sub_fold 4
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 2 sub_fold 5
+{'Dense_3': 67, 'Dense_2': 32, 'Dense_1': 128, 'Dense': 32, 'Dense_6': 67, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 134, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 3 sub_fold 1
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 3 sub_fold 2
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 3 sub_fold 3
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 3 sub_fold 4
+{'Dense_3': 128, 'Dense_2': 67, 'Dense_1': 256, 'Dense': 256, 'Dense_6': 128, 'Dense_5': 64, 'layers': 'three', 'Dense_4': 32, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 3 sub_fold 5
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 32, 'Dense': 256, 'Dense_6': 64, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 4 sub_fold 1
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 4 sub_fold 2
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 4 sub_fold 3
+{'Dense_3': 134, 'Dense_2': 512, 'Dense_1': 32, 'Dense': 128, 'Dense_6': 512, 'Dense_5': 32, 'layers': 'two', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 4 sub_fold 4
+{'Dense_3': 32, 'Dense_2': 67, 'Dense_1': 256, 'Dense': 64, 'Dense_6': 67, 'Dense_5': 512, 'layers': 'three', 'Dense_4': 64, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 4 sub_fold 5
+{'Dense_3': 64, 'Dense_2': 201, 'Dense_1': 64, 'Dense': 67, 'Dense_6': 32, 'Dense_5': 256, 'layers': 'four', 'Dense_4': 128, 'batch_size': 5000}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 5 sub_fold 1
+{'Dense_3': 201, 'Dense_2': 512, 'Dense_1': 256, 'Dense': 64, 'Dense_6': 201, 'Dense_5': 67, 'layers': 'three', 'Dense_4': 67, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 5 sub_fold 2
+{'Dense_3': 64, 'Dense_2': 32, 'Dense_1': 32, 'Dense': 128, 'Dense_6': 32, 'Dense_5': 32, 'layers': 'four', 'Dense_4': 134, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 5 sub_fold 3
+{'Dense_3': 32, 'Dense_2': 128, 'Dense_1': 67, 'Dense': 134, 'Dense_6': 201, 'Dense_5': 256, 'layers': 'two', 'Dense_4': 64, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 5 sub_fold 4
+{'Dense_3': 512, 'Dense_2': 512, 'Dense_1': 134, 'Dense': 134, 'Dense_6': 64, 'Dense_5': 134, 'layers': 'two', 'Dense_4': 256, 'batch_size': 2500}
+*****************************************
+Best performing model chosen hyper-parameters for Fold 5 sub_fold 5
+{'Dense_3': 32, 'Dense_2': 256, 'Dense_1': 32, 'Dense': 67, 'Dense_6': 128, 'Dense_5': 128, 'layers': 'three', 'Dense_4': 201, 'batch_size': 2500}
+*****************************************
