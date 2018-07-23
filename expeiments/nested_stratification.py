@@ -15,7 +15,7 @@ fold_1, fold_2, fold_3, fold_4, fold_5 = np.array_split(all_omim, 5)
 
 #seperate training
 #read PVP data and seperate instances to the 5 groups (training/testing sets)
-
+#DOWNLOAD PVP_data at: "http://bio2vec.net/pvp/deepPVP/PVP_data.csv"
 for i in range(5):
 	j = i + 1
 	f_split = open("fold" + str(j) + "/split.csv","w") 
@@ -52,7 +52,7 @@ for i in range(5):
 
 ############################Second Split#################################
 
-#furthur split the traing set into train/validate
+#furthur split into train/validate
 
 for x in range(5):
 	y = x + 1
