@@ -55,7 +55,7 @@ def model(X_train, Y_train, X_val, Y_val):
 	adam = keras.optimizers.Adam(lr=0.001)
 	model.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
 
-	model.fit(X_train, Y_train, validation_data=(X_val,Y_val), batch_size={{choice([2500, 5000,10000, 150000, 20000])}}, nb_epoch=50, verbose=2)
+	model.fit(X_train, Y_train, validation_data=(X_val,Y_val), batch_size={{choice([2500, 5000, 10000, 15000, 20000])}}, nb_epoch=50, verbose=2)
 
 	score, acc = model.evaluate(X_val, Y_val, verbose=0)
 	print('Validation accuracy:', acc)
