@@ -1,4 +1,4 @@
-# PhenomeNet Variant Prioritizer (PVP) 
+# PhenomeNet Variant Predictor (PVP) 
 A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data
 
 ## Software and Hardware requirements
