@@ -3,11 +3,11 @@ This document is aimed to provide an overview of DeepPVP training and evaluation
 For information on using DeepPVP for the analysis of personal exomes/genomes, please refer to the main README file at the repository.
 
 ## Required files (Part of DeepPVP data distribution file)
- - a-inferred.owl
- - diseasephenotypes.txt
- - modelphenotypes.txt
- - omim_mode.txt
- - toplevel.txt
+ - a-inferred.owl (for computing similarity score)
+ - diseasephenotypes.txt (for computing similarity score))
+ - modelphenotypes.txt (for computing similarity score)
+ - omim_mode.txt (for annotating disease mode of inheritence) 
+ - toplevel.txt (for annotating top level phenotypes features)
  
 ## Other Requirements
  - At least 32 GB RAM.
