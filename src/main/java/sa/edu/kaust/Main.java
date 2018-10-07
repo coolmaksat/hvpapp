@@ -29,7 +29,7 @@ public class Main {
     Map<String, List<String> > disPhenos;
 	Map<String, List<String> > interactions;
 	Pseudograph<String, DefaultEdge> actionsP;
-	String myPath;
+	//String myPath;
 	
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String inFile = "";
@@ -80,7 +80,7 @@ public class Main {
     private void loadInhModes() throws Exception {
         String fileName = this.props.getProperty("inhModesFile");
         this.inhModes = new HashMap<String, String>();
-        try(BufferedReader br = Files.newBufferedReader(Paths.get(this.myPath+fileName))) {
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
             String line;
             while((line = br.readLine()) != null) {
                 if (line.equals("")) {
@@ -206,9 +206,8 @@ public class Main {
     public void runTool() {
         try {
             log.info("Initializing the model");
-			String libPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-			this.myPath = libPath.substring(0,libPath.lastIndexOf("/")-3);
-			System.out.println(myPath);
+			//String libPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			//this.myPath = libPath.substring(0,libPath.lastIndexOf("/")-3);
             this.loadInhModes();
             this.loadDiseasePhenotypes();
 			this.loadInteractions();
