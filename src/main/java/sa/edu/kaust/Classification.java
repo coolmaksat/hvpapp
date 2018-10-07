@@ -45,9 +45,6 @@ public class Classification {
 			x++;
 		}
 		int val = p.waitFor();
-		p.getInputStream().close();
-		p.getOutputStream().close();
-		p.getErrorStream().close();
 		if (val == 0) {
 			System.out.println("Finished Annotation");
 			DataResult[] data = new DataResult[results.length];
@@ -71,8 +68,22 @@ public class Classification {
 			out.flush();
 			out.close();
 		}
-		else
-			System.out.println("Error in annotation!");
+		else {
+            System.out.println("Error in annotation! Return signal is: " + val);
+            System.out.println("STDERR is:");
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            while ((line = input.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+		p.getInputStream().close();
+		p.getOutputStream().close();
+		p.getErrorStream().close();
+		//Delete intermidiate files
+		File csvFile = new File(fileName + ".csv");
+		boolean deleteOp1 = Files.deleteIfExists(csvFile.toPath());
+		File outFile = new File(fileName + ".out");
+		boolean deleteOp2 = Files.deleteIfExists(outFile.toPath());
 		} catch (Exception e) {
 			e.printStackTrace();
     }
