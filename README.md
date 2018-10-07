@@ -130,7 +130,7 @@ PVP is jointly developed by researchers at the University of Birmingham ([Prof G
 
 [1] Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, Goncalves-Serra E, Schoenmakers N, Gkoutos GV., Schofield PN., and Hoehndorf R. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology. https://doi.org/10.1371/journal.pcbi.1005500
 
-[2] Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. 
+[2] Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. https://doi.org/10.1038/s41598-018-32876-3
 
 # License
 <pre>
