@@ -1,28 +1,44 @@
-# PhenomeNet Variant Predictor (PVP) 
+# PhenomeNet Variant Predictor (PVP) - User Guide
 A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data
 
-## Software and Hardware requirements
+This user guide have been tested on Ubuntu version 16.04
+For details regarding model training and evaluation, please refer to developerGuide file at dev/ directory above.
+
+## Hardware requirements
  - At least 32 GB RAM.
+ - At least 1TB free disk space to process and accommodate the necessary databases for annotation
+
+## Software requirements (for native installation)
  - Any Unix-based operating system
- - Java 8 or above
- - Python 2.7, with (Tensorflow(1.3.0), Keras(2.0.7), h5py(2.7), numpy, scipy, yaml, pyyaml, and pandas(0.20.3)) libraries
- - At least 550GB free disk space to accommodate the necessary databases for annotation
+ - Java 8
+ - Python 2.7 and install the following packages
+ ```
+	pip install 'scipy==1.1.0'
+	pip install 'numpy==1.15.2'
+	pip install 'pyyaml==3.13'
+	pip install 'pandas==0.20.3'
+	pip install 'h5py==2.7'
+	pip install 'tensorflow==1.3.0'
+	pip install 'keras==2.0.7'
+ ```
  
-## Installation 
+## Native Installation 
     
- 1. Download the distribution file [phenomenet-vp-2.0.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip)
- 2. Download the data files [phenomenet-vp-2.0-data.zip](http://bio2vec.net/pvp/data-v2.0.tar.gz)
- 3. Extract the distribution files `phenomenet-vp-2.0.zip `
- 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.0
- 5. cd `phenomenet-vp-2.0 `
+ 1. Download the distribution file [phenomenet-vp-2.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.1.zip)
+ 2. Download the data files [phenomenet-vp-2.1-data.zip](http://bio2vec.net/pvp/data-v2.1.tar.gz)
+ 3. Extract the distribution files `phenomenet-vp-2.1.zip `
+ 4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.1
+ 5. cd `phenomenet-vp-2.1 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
+
+## Docker Container (coming soon..)
 
 ## Database requirements 
   1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file.
   2. Download and run the script [generate.sh](http://www.bio2vec.net/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html)).
   3. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`.
   4. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`.
-  5. Rename the above two files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
+  5. Rename the DANN files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
   
 ## Parameters
     --file, -f
@@ -66,15 +82,19 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
 
 To run the tool, the user needs to provide a **VCF file** along with either an **OMIM ID** of the disease or a **list of phenotypes (HPO or MPO terms)**.
 
-a) Prioritize disease-causing variants using OMIM ID and coding model while keeping all variants:
+a) Prioritize disease-causing variants using an OMIM ID:
 
-	bin/phenomenet-vp -f data/Pfeiffer.vcf -o OMIM:101600
+	bin/phenomenet-vp -f data/Miller.vcf -o OMIM:263750
 	
-b) Prioritize disease-causing variants using a set of phenotypes, and parameters: coding model, and dominant inheritence mode, and filter noncoding variants from the result file
+a) Prioritize digenic disease-causing variants using an OMIM ID, and gene-to-phenotype datta from human studies only:
 
-	bin/phenomenet-vp -f data/Pfeiffer.vcf -p HP:0000006,HP:0000218,HP:0000238,HP:0000244,HP:0000303,HP:0000316,HP:0000327,HP:0000452,HP:0000453,HP:0000486,HP:0000494,HP:0000586,HP:0000678,HP:0001159,HP:0001249,HP:0002308,HP:0002676,HP:0002780,HP:0003041,HP:0003070,HP:0003196,HP:0003795,HP:0004440,HP:0005280,HP:0005347,HP:0006101,HP:0006110,HP:0010055,HP:0011304 -i dominant 
+	bin/phenomenet-vp -f data/Miller.vcf -o OMIM:263750 --human --digenic
+	
+c) Prioritize disease-causing variants using a set of phenotypes, and recessive inheritence mode
+
+	bin/phenomenet-vp -f data/Miller.vcf -p HP:0000007,HP:0000028,HP:0000054,HP:0000077,HP:0000175 -i recessive 
    
-   The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension.
+The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension. For digenic, trigenic or oligogenic prioritization, the result file will have .digenic, .trigenic, or .oligogenic extension repectivly.
    
 # Analysis of Rare Variants:
 
@@ -98,7 +118,7 @@ The updated neural-network model, DeepPVP is available to download [here](https:
 
 # OligoPVP
 
-OligoPVP is provided as part of DeepPVP tool using the parameters --digenic and --trigenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparitive results with other methods are also provided. Results are obtained using DeepPVP v2.0.
+OligoPVP is provided as part of DeepPVP tool using the parameters --digenic, --trigenicm and --oligogenic for ranking candidate disease-causing variant pairs and triples. Our prepared set of synthetic genomes digenic combinations are available [here](http://bio2vec.net/pvp/deepPVP/dida/) using data from the DIgenic diseases DAtabase (DIDA). The comparison results with other methods are also provided. Results were obtained using DeepPVP v2.0.
 
 
 # People
@@ -107,8 +127,8 @@ PVP is jointly developed by researchers at the University of Birmingham ([Prof G
 
 # Publications
 
-Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, et al. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology 13(4): e1005500. https://doi.org/10.1371/journal.pcbi.1005500
-
+Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, Goncalves-Serra E, Schoenmakers N, Gkoutos GV., Schofield PN., and Hoehndorf R. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology. https://doi.org/10.1371/journal.pcbi.1005500
+Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. 
 
 # License
 <pre>
