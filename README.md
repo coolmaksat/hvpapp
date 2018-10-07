@@ -1,7 +1,8 @@
 # PhenomeNet Variant Predictor (PVP) - User Guide
 A phenotype-based tool to annotate and prioritize disease variants in WES and WGS data
 
-This user guide have been tested on Ubuntu version 16.04
+This user guide have been tested on Ubuntu version 16.04.
+
 For details regarding model training and evaluation, please refer to developerGuide file at dev/ directory above.
 
 ## Hardware requirements
@@ -86,7 +87,7 @@ a) Prioritize disease-causing variants using an OMIM ID:
 
 	bin/phenomenet-vp -f data/Miller.vcf -o OMIM:263750
 	
-a) Prioritize digenic disease-causing variants using an OMIM ID, and gene-to-phenotype datta from human studies only:
+b) Prioritize digenic disease-causing variants using an OMIM ID, and gene-to-phenotype datta from human studies only:
 
 	bin/phenomenet-vp -f data/Miller.vcf -o OMIM:263750 --human --digenic
 	
@@ -94,7 +95,7 @@ c) Prioritize disease-causing variants using a set of phenotypes, and recessive 
 
 	bin/phenomenet-vp -f data/Miller.vcf -p HP:0000007,HP:0000028,HP:0000054,HP:0000077,HP:0000175 -i recessive 
    
-The result file will be at the directory containg the input file. The output file has the same name as input file with .res extension. For digenic, trigenic or oligogenic prioritization, the result file will have .digenic, .trigenic, or .oligogenic extension repectivly.
+The result file will be at the directory containg the input file. The output file has the same name as input file with **.res** extension. For digenic, trigenic or oligogenic prioritization, the result file will have ***.digenic, .trigenic, or .oligogenic*** extension repectivly.
    
 # Analysis of Rare Variants:
 
@@ -127,8 +128,9 @@ PVP is jointly developed by researchers at the University of Birmingham ([Prof G
 
 # Publications
 
-Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, Goncalves-Serra E, Schoenmakers N, Gkoutos GV., Schofield PN., and Hoehndorf R. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology. https://doi.org/10.1371/journal.pcbi.1005500
-Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. 
+[1] Boudellioua I, Mahamad Razali RB, Kulmanov M, Hashish Y, Bajic VB, Goncalves-Serra E, Schoenmakers N, Gkoutos GV., Schofield PN., and Hoehndorf R. (2017) Semantic prioritization of novel causative genomic variants. PLOS Computational Biology. https://doi.org/10.1371/journal.pcbi.1005500
+
+[2] Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. 
 
 # License
 <pre>
