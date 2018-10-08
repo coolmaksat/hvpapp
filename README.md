@@ -3,7 +3,7 @@ A phenotype-based tool to annotate and prioritize disease variants in WES and WG
 
 This user guide have been tested on Ubuntu version 16.04.
 
-For details regarding model training and evaluation, please refer to developerGuide file at dev/ directory above.
+For details regarding model training and evaluation, please refer to  dev/ directory above.
 
 ## Hardware requirements
  - At least 32 GB RAM.
