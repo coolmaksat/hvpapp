@@ -4,17 +4,28 @@ LABEL maintainer <maxat.kulmanov@kaust.edu.sa>
 
 USER root
 
-WORKDIR /tmp
+RUN mkdir /tmp/phenomenet-vp
+WORKDIR /tmp/phenomenet-vp
+
+# Install gradle
+RUN curl -L https://downloads.gradle.org/distributions/gradle-4.10.2-bin.zip -o gradle.zip && \
+  mkdir /opt/gradle && \
+  unzip -d /opt/gradle gradle.zip && \
+  rm -rf *
+
+ENV PATH="/opt/gradle/gradle-4.10.2/bin:${PATH}"
 
 COPY . .
 
-RUN curl https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.0/phenomenet-vp-2.0.zip -o phenomenet.zip && \
-  unzip phenomenet.zip -d /app/ && \
-  curl http://bio2vec.net/pvp/data-v2.0.tar.gz -o data.tar.gz && \
-  tar xvzf data.tar.gz -C /app/phenoment-vp-2.0/ && \
+# Should be the same as in build.gradle
+ENV pvp_version='2.1'
+
+RUN gradle assembleDist && ls build/distributions/ && \
+  unzip build/distributions/phenomenet-vp-${pvp_version}.zip -d /app/ && \
+  pip install -r requirements.txt && \
   rm -rf *
 
-ENV PATH="/app/phenomenet-vp-2.0/bin:${PATH}"
+ENV PATH="/app/phenomenet-vp-${pvp_version}/bin:${PATH}"
 
 WORKDIR /
 

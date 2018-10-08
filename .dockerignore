@@ -1,0 +1,4 @@
+data/
+build/
+*.tar.gz
+*.zip
