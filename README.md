@@ -36,11 +36,14 @@ For details regarding model training and evaluation, please refer to developerGu
 ## Docker Container
 
 1. Install [Docker](https://docs.docker.com/)
-2. Build phenomenet-vp docker image:
+2. Download the data files
+   [phenomenet-vp-2.1-data.zip](http://bio2vec.net/pvp/data-v2.1.tar.gz)
+   and database requirements
+3. Build phenomenet-vp docker image:
 ```
    docker build -t phenomenet-vp .
 ```
-3. Run phenomenet
+4. Run phenomenet
 ```
    docker run -v $(pwd)/data:/data phenomenet-vp -f data/Miller.vcf -o OMIM:263750 
 ```
