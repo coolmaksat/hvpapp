@@ -36,13 +36,13 @@ For details regarding model training and evaluation, please refer to developerGu
 ## Docker Container
 
 1. Install [Docker](https://docs.docker.com/)
-2. Build phenomenet docker image:
+2. Build phenomenet-vp docker image:
 ```
-   docker build -t phenomenet .
+   docker build -t phenomenet-vp .
 ```
 3. Run phenomenet
 ```
-   docker run -v $(pwd)/data:/data phenomenet -f data/Miller.vcf -o OMIM:263750 
+   docker run -v $(pwd)/data:/data phenomenet-vp -f data/Miller.vcf -o OMIM:263750 
 ```
 
 ## Parameters
