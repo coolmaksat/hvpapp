@@ -7,8 +7,7 @@ import java.nio.file.*;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import sa.edu.kaust.exceptions.*;
 import org.json.*;
 import org.jgrapht.*;
@@ -264,7 +263,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        JCommander jCommander = null;
+	
+	JCommander jCommander = null;
         Main main = null;
         try {
             main = new Main();

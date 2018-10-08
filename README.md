@@ -12,15 +12,9 @@ For details regarding model training and evaluation, please refer to developerGu
 ## Software requirements (for native installation)
  - Any Unix-based operating system
  - Java 8
- - Python 2.7 and install the following packages
+ - Python 2.7 and install the dependencies with:
  ```
-	pip install 'scipy==1.1.0'
-	pip install 'numpy==1.15.2'
-	pip install 'pyyaml==3.13'
-	pip install 'pandas==0.20.3'
-	pip install 'h5py==2.7'
-	pip install 'tensorflow==1.3.0'
-	pip install 'keras==2.0.7'
+	pip install -r requirements.txt
  ```
  
 ## Native Installation 
@@ -32,15 +26,28 @@ For details regarding model training and evaluation, please refer to developerGu
  5. cd `phenomenet-vp-2.1 `
  6. Run the command: `bin/phenomenet-vp` to display help and parameters.
 
-## Docker Container (coming soon..)
-
 ## Database requirements 
   1. Download [CADD](http://krishna.gs.washington.edu/download/CADD/v1.3/whole_genome_SNVs_inclAnno.tsv.gz) database file.
   2. Download and run the script [generate.sh](http://www.bio2vec.net/pvp/generate.sh) (Requires [TABIX](http://www.htslib.org/doc/tabix.html)).
   3. Copy the generated files `cadd.txt.gz` and `cadd.txt.gz.tbi` to directory `phenomenet-vp-1.0/data/db`.
   4. Download [DANN](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz) database file and its [indexed](https://cbcl.ics.uci.edu/public_data/DANN/data/DANN_whole_genome_SNVs.tsv.bgz.tbi) file to directory `phenomenet-vp-1.0/data/db`.
   5. Rename the DANN files as `dann.txt.gz` and `dann.txt.gz.tbi` respectively. 
-  
+
+## Docker Container
+
+1. Install [Docker](https://docs.docker.com/)
+2. Download the data files
+   [phenomenet-vp-2.1-data.zip](http://bio2vec.net/pvp/data-v2.1.tar.gz)
+   and database requirements
+3. Build phenomenet-vp docker image:
+```
+   docker build -t phenomenet-vp .
+```
+4. Run phenomenet
+```
+   docker run -v $(pwd)/data:/data phenomenet-vp -f data/Miller.vcf -o OMIM:263750 
+```
+
 ## Parameters
     --file, -f
        Path to VCF file
