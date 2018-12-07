@@ -12,10 +12,11 @@ For details regarding model training and evaluation, please refer to  dev/ direc
 ## Software requirements (for native installation)
  - Any Unix-based operating system
  - Java 8
- - Python 2.7 and install the dependencies with:
+ - Python 2.7 (as a system default version) and install the dependencies (for Python 2.7) with:
  ```
 	pip install -r requirements.txt
  ```
+ - Run script test.py (avilable above) to test the installation of the python dependencies. 
  
 ## Native Installation 
     
