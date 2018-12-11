@@ -28,12 +28,14 @@ public class Main {
     Map<String, List<String> > disPhenos;
 	Map<String, List<String> > interactions;
 	Pseudograph<String, DefaultEdge> actionsP;
-	//String myPath;
 	
     @Parameter(names={"--file", "-f"}, description="Path to VCF file", required=true)
     String inFile = "";
     @Parameter(names={"--outfile", "-of"}, description="Path to results file", required=false)
     String outFile = "";
+	
+	@Parameter(names={"--python", "-y"}, description="Path to Python executable (ex. /usr/bin/python) ", required=false)
+    String pythonPath = "python";
 
     @Parameter(names={"--phenotypes", "-p"}, description="List of phenotype ids separated by commas")
     String phenos = "";
@@ -76,6 +78,70 @@ public class Main {
         this.props = this.getProperties();
     }
 
+	private boolean validatePythonDep() throws Exception {
+		//load python and check dependencies
+		String line = "";
+		boolean status = false;
+		String pythonVersion = "check_version.py";
+		String pythonDep = "check_dep.py";
+		BufferedWriter writer = new BufferedWriter(new FileWriter(pythonVersion));
+		writer.write("import sys\n");
+		writer.write("print sys.version_info[0]\n");
+		writer.close();
+		writer = new BufferedWriter(new FileWriter(pythonDep));
+		writer.write("import keras\n");
+		writer.write("from keras.layers import Dropout\n");
+		writer.write("from keras.models import Sequential\n");
+		writer.write("from keras.layers import Dense\n");
+		writer.write("import numpy\n");
+		writer.write("import pandas\n");
+		writer.write("import h5py\n");
+		writer.write("import tensorflow\n");
+		writer.close();
+		try {
+			ProcessBuilder pb = new ProcessBuilder(this.pythonPath,pythonVersion);
+			Process p = pb.start();
+			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			while ((line = in.readLine()) != null) {
+				if (line.contains("2"))
+					status =  true;
+				else {
+					status = false;
+					}
+			}
+			int val = p.waitFor();
+			/*if (val != 0) {
+				System.out.println("Error in checking python dependencies:");
+				BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				while ((line = input.readLine()) != null) {
+					System.out.println(line);
+				}
+				return false;
+			}*/
+			p.getInputStream().close();
+			if (!status) 
+				System.out.println("Incompatible python version. Please install python 2.7 and specify the path to python 2.7 using command line parameter --python");
+			//p.getErrorStream().close();
+			else {
+				pb = new ProcessBuilder(this.pythonPath,pythonDep);
+				p = pb.start();
+				val = p.waitFor();
+				if (val != 0) {
+					System.out.println("Missing dependencies required to run the tool. Please refer to the README file for more information.");
+					status = false;
+				}
+			}
+			File versionFile = new File(pythonVersion);
+			File depFile = new File(pythonDep);
+			boolean deleteOp1 = Files.deleteIfExists(versionFile.toPath());
+			boolean deleteOp2 = Files.deleteIfExists(depFile.toPath());
+			p.getInputStream().close();
+			return status;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
     private void loadInhModes() throws Exception {
         String fileName = this.props.getProperty("inhModesFile");
         this.inhModes = new HashMap<String, String>();
@@ -207,51 +273,54 @@ public class Main {
             log.info("Initializing the model");
 			//String libPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			//this.myPath = libPath.substring(0,libPath.lastIndexOf("/")-3);
-            this.loadInhModes();
-            this.loadDiseasePhenotypes();
-			this.loadInteractions();
-            this.validateParameters();
-            for (String pheno: this.phenotypes) {
-                System.out.println(pheno);
-            }
-            this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
-            this.annotations = new Annotations(this.props);
-            this.classification = new Classification(this.props);
-            log.info("Computing similarities");
-            Set<String> phenotypes = new HashSet<String>(this.phenotypes);
-            Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
-            log.info("Getting top level phenotypes");
-            Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
-			log.info("Starting annotation");
-			this.inh = this.inh.toLowerCase();
-			if (this.inh.equals("dominant")) {
-				this.mode = "0";
-			} else if (this.inh.equals("recessive")) {
-				this.mode = "1";
-			} else if (this.inh.equals("x-linked")) {
-				this.mode = "2";
-			}
-            this.annotations.getAnnotations(
-                this.inFile, this.outFile, this.inh, this.model, sims);
-			this.classification.toCSV(this.outFile, topPhenos, this.mode);
-            this.classification.toolClassify(this.outFile);
-			if (digenic) {
-				List<String> genes = new ArrayList<String>();
-				genes.addAll(this.interactions.keySet());
-				this.classification.toolFilter(this.outFile, genes, 2);
-				this.classification.toolDigenic(this.outFile, this.interactions, 2, c);
-			}
-			if (trigenic) {
-				List<String> genes = new ArrayList<String>();
-				genes.addAll(this.interactions.keySet());
-				this.classification.toolFilter(this.outFile, genes, 3);
-				this.classification.toolTrigenicOpt(this.outFile, this.interactions, 3, c);
-			}
-			if (oligogenic) {
-				List<String> genes = new ArrayList<String>();
-				genes.addAll(this.interactions.keySet());
-				this.classification.toolFilter(this.outFile, genes, 4);
-				this.classification.toolCombine(this.outFile, this.actionsP, this.n);
+            boolean status_python = this.validatePythonDep();
+			if (status_python) {
+				this.loadInhModes();
+				this.loadDiseasePhenotypes();
+				this.loadInteractions();
+				this.validateParameters();
+				for (String pheno: this.phenotypes) {
+					System.out.println(pheno);
+				}
+				this.phenoSim = new PhenoSim(this.props, this.human, this.mod);
+				this.annotations = new Annotations(this.props);
+				this.classification = new Classification(this.props);
+				log.info("Computing similarities");
+				Set<String> phenotypes = new HashSet<String>(this.phenotypes);
+				Map<String, Double> sims = this.phenoSim.getGeneSimilarities(phenotypes);
+				log.info("Getting top level phenotypes");
+				Set<String> topPhenos = this.phenoSim.getTopLevelPhenotypes(phenotypes);
+				log.info("Starting annotation");
+				this.inh = this.inh.toLowerCase();
+				if (this.inh.equals("dominant")) {
+					this.mode = "0";
+				} else if (this.inh.equals("recessive")) {
+					this.mode = "1";
+				} else if (this.inh.equals("x-linked")) {
+					this.mode = "2";
+				}
+				this.annotations.getAnnotations(
+					this.inFile, this.outFile, this.inh, this.model, sims);
+				this.classification.toCSV(this.outFile, topPhenos, this.mode);
+				this.classification.toolClassify(this.outFile, this.pythonPath);
+				if (digenic) {
+					List<String> genes = new ArrayList<String>();
+					genes.addAll(this.interactions.keySet());
+					this.classification.toolFilter(this.outFile, genes, 2);
+					this.classification.toolDigenic(this.outFile, this.interactions, 2, c);
+				}
+				if (trigenic) {
+					List<String> genes = new ArrayList<String>();
+					genes.addAll(this.interactions.keySet());
+					this.classification.toolFilter(this.outFile, genes, 3);
+					this.classification.toolTrigenicOpt(this.outFile, this.interactions, 3, c);
+				}
+				if (oligogenic) {
+					List<String> genes = new ArrayList<String>();
+					genes.addAll(this.interactions.keySet());
+					this.classification.toolFilter(this.outFile, genes, 4);
+					this.classification.toolCombine(this.outFile, this.actionsP, this.n);
+				}
 			}
         } catch(PhenotypeFormatException e) {
             log.severe(e.getMessage());
