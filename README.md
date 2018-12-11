@@ -20,7 +20,7 @@ For details regarding model training and evaluation, please refer to  dev/ direc
  
 ## Native Installation 
     
- 1. Download the distribution file [phenomenet-vp-2.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.1/phenomenet-vp-2.1.zip)
+ 1. Download the distribution file [phenomenet-vp-2.1.zip](https://github.com/bio-ontology-research-group/phenomenet-vp/releases/download/v2.1.1/phenomenet-vp-2.1.zip)
  2. Download the data files [phenomenet-vp-2.1-data.zip](http://bio2vec.net/pvp/data-v2.1.tar.gz)
  3. Extract the distribution files `phenomenet-vp-2.1.zip `
  4. Extract the data files `data.tar.gz` inside the directory phenomenet-vp-2.1
