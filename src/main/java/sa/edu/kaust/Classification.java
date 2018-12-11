@@ -26,7 +26,7 @@ public class Classification {
     }
 
 
-    public void toolClassify(String fileName) throws Exception {
+    public void toolClassify(String fileName, String pythonPath) throws Exception {
 		long fileCount = Files.lines(Paths.get(fileName + ".csv")).count() - 1;
 		Double[] results = new Double[(int)fileCount];
         Classification that = this;
@@ -36,7 +36,7 @@ public class Classification {
 		String pythonScript;
 		pythonScript = "data/score.py";
 		try {
-		ProcessBuilder pb = new ProcessBuilder("python",pythonScript,""+param1,""+param2);
+		ProcessBuilder pb = new ProcessBuilder(pythonPath,pythonScript,""+param1,""+param2);
 		Process p = pb.start();
 		int x = 0;
 		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
