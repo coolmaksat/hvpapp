@@ -85,7 +85,9 @@ For details regarding model training and evaluation, please refer to  dev/ direc
     --oligogenic, -og
        Rank oligogenic combinations
        Default: false
-
+    --python, -y
+        Path to Python executable (ex. /usr/bin/python)
+        Default: python
 
 ## Usage:
 
