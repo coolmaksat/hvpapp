@@ -16,7 +16,7 @@ For details regarding model training and evaluation, please refer to  dev/ direc
  ```
 	pip install -r requirements.txt
  ```
- - Run script test.py (avilable above) to test the installation of the python dependencies. 
+ - Run python 2 for the script test.py (available above) to test the installation of the python dependencies. If the script fails, please try again to install the required dependencies.
  
 ## Native Installation 
     
