@@ -101,7 +101,7 @@ b) Prioritize digenic disease-causing variants using an OMIM ID, and gene-to-phe
 
 	bin/phenomenet-vp -f data/Miller.vcf -o OMIM:263750 --human --digenic
 	
-c) Prioritize disease-causing variants using a set of phenotypes, and recessive inheritence mode
+c) Prioritize disease-causing variants using a set of phenotypes, and recessive inheritance mode
 
 	bin/phenomenet-vp -f data/Miller.vcf -p HP:0000007,HP:0000028,HP:0000054,HP:0000077,HP:0000175 -i recessive 
    
