@@ -142,6 +142,8 @@ PVP is jointly developed by researchers at the University of Birmingham ([Prof G
 
 [2] Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2018) OligoPVP: Phenotype-driven analysis of individual genomic information to prioritize oligogenic disease variants. Scientific Reports. https://doi.org/10.1038/s41598-018-32876-3
 
+[3] Boudellioua I, Kulmanov M, Schofield PN., Gkoutos GV., and Hoehndorf R . (2019) DeepPVP: phenotype-based prioritization of causative variants using deep learning. BMC Bioinformatics. https://doi.org/10.1186/s12859-019-2633-8
+
 # License
 <pre>
 Copyright (c) 2016-2018, King Abdullah University of Science and Technology
