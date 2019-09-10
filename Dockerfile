@@ -1,4 +1,4 @@
-FROM rappdw/docker-java-python
+FROM omahoco1/alpine-java-python
 
 LABEL maintainer <maxat.kulmanov@kaust.edu.sa>
 
